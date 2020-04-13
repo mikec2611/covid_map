@@ -2,6 +2,7 @@ $(document).ready(function($) {
 
 	var $slider_info_box = $('#slider_info_box')
 
+	console.log(date_list)
 
 	var first_date = date_list[0]
 	var last_date = date_list[date_list.length - 1]
@@ -37,7 +38,7 @@ $(document).ready(function($) {
 						property: 'cases_20200404',
 						stops: [
 							[0, 'blue'],
-							[50, 'red']
+							[5, 'red']
 						],
 				},
 				'fill-outline-color': 'black',
@@ -45,8 +46,6 @@ $(document).ready(function($) {
 			}
 		});
 	});
-
-	
 
 	// create date slider
 	var first_date_sld = first_date.substring(0,4) + "." + first_date.substring(4,6) + "." + first_date.substring(6,8)
@@ -77,7 +76,7 @@ $(document).ready(function($) {
 			property: curr_lookup,
 			stops: [
 				[0, 'blue'],
-				[50, 'red']
+				[5, 'red']
 			]
 		});
 
