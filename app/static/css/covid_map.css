@@ -1,0 +1,53 @@
+body{
+	margin:0;
+	padding: 0;
+	font-family:sans-serif;
+}
+
+#map{
+	position:absolute;
+	top:0;
+	bottom:0;
+	width:100%;
+	z-index:1000;
+}
+
+#slider_container{
+    position: absolute;
+    bottom: 30;
+    width: 80%;
+    left: 10%;
+    height: 100px;
+    background-color: black;
+    z-index: 1100;
+    border: 1px solid gray;
+    box-shadow: 4px 4px 8px 1px black;
+}
+
+#date_slider{
+    position: relative;
+    width: 90%;
+    left: 5%;
+    top: 20%;
+}
+
+#slider_info_box{
+    color: white;
+    font-size: 32px;
+    text-align: center;
+}
+
+.slider_val_box{
+	color: gray;
+    font-size: 13px;
+    text-align: center;
+    vertical-align:bottom;
+}
+#slider_min_box{
+	text-align: left;
+	padding-left: 30px;
+}
+#slider_min_box{
+	text-align: right;    
+    padding-right: 30px;
+}

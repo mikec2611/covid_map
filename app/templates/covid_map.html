@@ -2,6 +2,7 @@
 	<head>
 		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 		<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/covid_map.css') }}" />
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -14,12 +15,30 @@
 		</script>
 
 	</head>
-	<body style="margin: 0;padding: 0;">
-		<div id="map" style="position:absolute;top:0;bottom:0;width:100%;"></div>
+	<body>
+		<div id="map"></div>
 
-		<div id="changebtn" style="position:absolute;top:0;bottom:0;width:500px;height:100px;background-color:orange;z-index:1000">
-			<input type="text" id="date_slider_input" style="border: 0; color: #f6931f; font-weight: bold;" size="100"/>
-			<div id='date_slider'></div>
-		</div>
+
+		<table id="slider_container">
+			<tbody>
+				<tr>
+					<td id='slider_min_box' class="slider_val_box"></td>
+					<td id='slider_info_box'></td>
+					<td id='slider_max_box' class="slider_val_box"></td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<div id='date_slider'></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+<!-- 		<div id="slider_container" >
+			<div id='slider_min_box' class="slider_val_box"></div>
+			<div id='slider_info_box'></div>
+			<div id='slider_max_box' class="slider_val_box"></div>
+			
+		</div> -->
 	</body>
 </html>
