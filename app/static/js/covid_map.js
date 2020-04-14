@@ -2,8 +2,6 @@ $(document).ready(function($) {
 
 	var $slider_info_box = $('#slider_info_box')
 
-	console.log(date_list)
-
 	var first_date = date_list[0]
 	var last_date = date_list[date_list.length - 1]
 
@@ -70,7 +68,18 @@ $(document).ready(function($) {
 	$("#date_slider").on("slide", function(event, ui) {
 		var curr_date = new Date(ui.value * 1000)
 		var curr_date_id = curr_date.toISOString().split('T')[0]
-		var curr_lookup = "cases_" + curr_date_id.replace(/-/g, "")
+		var curr_datatype = "cases"; // default
+
+		$.each($("input.rb_dataopt"), function(){
+			console.log($(this))
+			console.log(this)
+			if(this.is(':checked')){
+				curr_datatype = $(this).value
+			};
+		});
+
+		console.log(curr_datatype)
+		var curr_lookup = curr_datatype + "_" + curr_date_id.replace(/-/g, "")
 
 		map.setPaintProperty('us_counties', 'fill-color', {
 			property: curr_lookup,

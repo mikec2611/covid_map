@@ -19,7 +19,26 @@
 		<div id="map"></div>
 
 
-		<table id="slider_container">
+		<table id="data_options_box" class="control_box">
+			<thead>
+				<th id="dataopt_title" colspan="2">Data Type</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="rb_dataopt_box">
+						<input id="dataopt_cases" class="rb_dataopt" type="radio" name="dataopt_type" value="cases" checked="checked"># of Cases</input>
+					</td>
+				</tr>
+				<tr>
+					<td class="rb_dataopt_box">
+						<input id="dataopt_deaths" class="rb_dataopt" type="radio" name="dataopt_type" value="deaths"># of Deaths</input>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+
+		<table id="slider_container" class="control_box">
 			<tbody>
 				<tr>
 					<td id='slider_min_box' class="slider_val_box"></td>

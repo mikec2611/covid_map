@@ -4,6 +4,12 @@ body{
 	font-family:sans-serif;
 }
 
+.control_box{
+	background-color:black;
+	border:1px solid gray;
+	box-shadow: 4px 4px 8px 1px black;
+}
+
 #map{
 	position:absolute;
 	top:0;
@@ -18,10 +24,7 @@ body{
     width: 80%;
     left: 10%;
     height: 100px;
-    background-color: black;
     z-index: 1100;
-    border: 1px solid gray;
-    box-shadow: 4px 4px 8px 1px black;
 }
 
 #date_slider{
@@ -51,3 +54,29 @@ body{
 	text-align: right;    
     padding-right: 30px;
 }
+
+
+#data_options_box{
+	position:absolute;
+	z-index:1100;
+	height:15%;
+	width:10%;
+	left:1.5%;
+	top:20%;
+	color:white;
+}
+#dataopt_title{
+	font-size: 24px;
+}
+
+.rb_dataopt_box{
+	font-size: 21px;
+    padding-left: 10%;
+    line-height: 36px;
+}
+.rb_dataopt{
+	width:18px;
+	height:18px;
+	margin-right:10%;
+}
+

@@ -92,7 +92,7 @@ def run_process(get_data_flag):
 		print("Loaded locally")
 		data_county = pd.read_csv('app/static/data/data_county.csv')
 		date_list = data_county["date_id"].astype(str).unique().tolist()
-		print(date_list)
+		# print(date_list)
 
 		with open('app/static/data/geodata_county.geojson') as f:
 			geodata_county = json.load(f)
