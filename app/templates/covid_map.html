@@ -16,9 +16,10 @@
 
 	</head>
 	<body>
+		<!-- map -->
 		<div id="map"></div>
 
-
+		<!-- date type control box -->
 		<table id="data_options_box" class="control_box">
 			<thead>
 				<th id="dataopt_title" colspan="2">Data Type</th>
@@ -34,10 +35,15 @@
 						<input id="dataopt_deaths" class="rb_dataopt" type="radio" name="dataopt_type" value="deaths"># of Deaths</input>
 					</td>
 				</tr>
+				<tr>
+					<td class="rb_dataopt_box" title="Death Rate (Cases) = Deaths / Cases">
+						<input id="dataopt_deathsPercCases" class="rb_dataopt" type="radio" name="dataopt_type" value="deathsPercCases">Death Rate (Cases)</input>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 
-
+		<!-- date slider control box -->
 		<table id="slider_container" class="control_box">
 			<tbody>
 				<tr>
@@ -52,12 +58,5 @@
 				</tr>
 			</tbody>
 		</table>
-
-<!-- 		<div id="slider_container" >
-			<div id='slider_min_box' class="slider_val_box"></div>
-			<div id='slider_info_box'></div>
-			<div id='slider_max_box' class="slider_val_box"></div>
-			
-		</div> -->
 	</body>
 </html>

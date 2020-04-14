@@ -59,8 +59,8 @@ body{
 #data_options_box{
 	position:absolute;
 	z-index:1100;
-	height:15%;
-	width:10%;
+	/*height:15%;*/
+	min-width: 300px;
 	left:1.5%;
 	top:20%;
 	color:white;

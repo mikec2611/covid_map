@@ -21,10 +21,13 @@ def get_data_covid():
 	return df_county
 
 def get_data_geo():
-	# data_url = 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/pa_pennsylvania_zip_codes_geo.min.json'
-	data_url = 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/nj_new_jersey_zip_codes_geo.min.json'
-	response = requests.get(data_url)
-	geodata_county = response.json()
+	# # data_url = 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/pa_pennsylvania_zip_codes_geo.min.json'
+	# data_url = 'https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/nj_new_jersey_zip_codes_geo.min.json'
+	# response = requests.get(data_url)
+	# geodata_county = response.json()
+
+	with open('app/static/data/state_county_geojson/fl_florida_zip_codes_geo.min.json') as f:
+		geodata_county = json.load(f)
 
 	zip_fips_lookup = pd.read_csv('app/static/data/ZIP-COUNTY-FIPS_2018-03.csv')
 
@@ -68,16 +71,15 @@ def run_process(get_data_flag):
 						if date_data.empty:
 							feature["properties"]["cases_" + date_val] = 0
 							feature["properties"]["deaths_" + date_val] = 0
+							feature["properties"]["deathsPercCases_" + date_val] = 0
 						else:
 							feature["properties"]["cases_" + date_val] = date_data["cases"].values[0].astype("float")
 							feature["properties"]["deaths_" + date_val] = date_data["deaths"].values[0].astype("float")
+							feature["properties"]["deathsPercCases_" + date_val] = round(feature["properties"]["deaths_" + date_val] / feature["properties"]["cases_" + date_val],1) * 100
 
 					geodata_county_features.append(feature)
-				# else:
-				# 	for date_val in date_list:
-				# 		feature["properties"]["cases_" + date_val] = 0
-				# 		feature["properties"]["deaths_" + date_val] = 0
 
+		# deletes features with no data
 		geodata_county["features"] = geodata_county_features
 		# print(len(geodata_county["features"]))
 
