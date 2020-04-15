@@ -15,6 +15,18 @@ $(document).ready(function($) {
 	// console.log(date_list)
 	console.log(geodata_county)
 
+	// get dates
+	var first_date = date_list[0]
+	var last_date = date_list[date_list.length - 1]
+	var first_date_sld = first_date.substring(0,4) + "." + first_date.substring(4,6) + "." + first_date.substring(6,8)
+	var last_date_sld = last_date.substring(0,4) + "." + last_date.substring(4,6) + "." + last_date.substring(6,8)
+
+	// populate dates on ui
+	var first_date_format = new Date((new Date(first_date_sld).getTime() / 1000) * 1000)
+	var last_date_format = new Date((new Date(last_date_sld).getTime() / 1000) * 1000)
+	$("#slider_min_box").text(first_date_format.toString().substring(0,15))
+	$("#slider_max_box").text(last_date_format.toString().substring(0,15))
+
 	// load map
 	map.on('load', function() {
 		// add data source
@@ -34,19 +46,10 @@ $(document).ready(function($) {
 				'fill-opacity': 0.8
 			}
 		});
+
+		update_map(new Date(last_date_sld).getTime() / 1000)
 	});
 
-	// get dates
-	var first_date = date_list[0]
-	var last_date = date_list[date_list.length - 1]
-	var first_date_sld = first_date.substring(0,4) + "." + first_date.substring(4,6) + "." + first_date.substring(6,8)
-	var last_date_sld = last_date.substring(0,4) + "." + last_date.substring(4,6) + "." + last_date.substring(6,8)
-
-	// populate dates on ui
-	var first_date_format = new Date((new Date(first_date_sld).getTime() / 1000) * 1000)
-	var last_date_format = new Date((new Date(last_date_sld).getTime() / 1000) * 1000)
-	$("#slider_min_box").text(first_date_format.toString().substring(0,15))
-	$("#slider_max_box").text(last_date_format.toString().substring(0,15))
 
 	// create date slider
     $date_slider.slider({
@@ -55,6 +58,8 @@ $(document).ready(function($) {
         max: new Date(last_date_sld).getTime() / 1000,
         step: 86400,
         value: new Date(last_date_sld).getTime() / 1000
+    }).ready(function(){    	
+    	
     });
 
     // events that update the map
@@ -65,10 +70,7 @@ $(document).ready(function($) {
 		update_map($date_slider.slider("option","value"))
 	});
 
-
-
-	
-	initialize_map()
+	// initialize_map()
 	// ---functions
 
 	// update map based on date_slider value
@@ -89,12 +91,12 @@ $(document).ready(function($) {
 
 	// calculate which legend stops to use
 	function calc_legend_stops(curr_datatype){
-		if (curr_datatype != "deathsPercCases"){ // non-percentage datatypes
+		if (curr_datatype != "deaths"){
 			legend_stops = [
 				[0, 'gray'],
 				[5, 'green']
 			];
-		} else{ // percentage datatypes
+		} else{
 			legend_stops = [
 				[0, 'gray'],
 				[100, 'red']
@@ -104,13 +106,13 @@ $(document).ready(function($) {
 		return legend_stops;
 	};
 
-	// initialize map
-	function initialize_map(){
-		setTimeout(function(){
-			update_map(new Date(last_date_sld).getTime() / 1000);	
-			alert("A")
-		}, 1000);
-	};
+	// // initialize map
+	// function initialize_map(){
+	// 	setTimeout(function(){
+				
+	// 		// alert("A")
+	// 	}, 1000);
+	// };
 
 // 	//---------------------------------------------------------------------------------------------------
 // 	// When a click event occurs on a feature in the states layer, open a popup at the
