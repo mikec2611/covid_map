@@ -4,7 +4,13 @@ import datetime
 import json
 import os
 from geojson import dump, FeatureCollection
-import time                                          #1
+import time
+
+# data sources
+# covid - NYT (github)
+# shapefiles - OpenDataDE/State-zip-code-GeoJSON (github)
+# dips->zip conversion - https://data.world/niccolley/us-zipcode-to-county-state/workspace/file?filename=ZIP-COUNTY-FIPS_2018-03.csv
+# county population - data.world in progress
 
 def get_data_covid():
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data//master/us-counties.csv',
@@ -156,6 +162,3 @@ def run_process(get_data_flag):
 
 def debug_msg(msg):
 	print(time.strftime("[%m/%d/%Y %H:%M:%S] ") + msg)
-
-
-# run_process(True)
