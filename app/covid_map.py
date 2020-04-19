@@ -35,7 +35,7 @@ def get_data_covid():
 def get_data_geo_bulk():
 	# zip geojson
 	geojson_path = 'app/static/data/state_county_geojson/'
-	geojson_path = 'C:/programming/covid_map/' + geojson_path
+	# geojson_path = 'C:/programming/covid_map/' + geojson_path
 	geojson_files = os.listdir(geojson_path)
 	all_county_features = []
 	
@@ -50,7 +50,7 @@ def get_data_geo_bulk():
 
 	#fips data for zip conversion
 	zips_path = 'app/static/data/ZIP-COUNTY-FIPS_2018-03.csv'
-	zips_path = 'C:/programming/covid_map/' + zips_path
+	# zips_path = 'C:/programming/covid_map/' + zips_path
 	zip_fips_lookup = pd.read_csv(zips_path, dtype={'STCOUNTYFP': 'str'})
 
 	return(geodata_county, zip_fips_lookup)
@@ -63,13 +63,13 @@ def get_data_geo():
 	#ca_california_zip_codes_geo
 
 	state_file_path = 'app/static/data/state_county_geojson/ca_california_zip_codes_geo.json'
-	state_file_path = 'C:/programming/covid_map/' + state_file_path
+	# state_file_path = 'C:/programming/covid_map/' + state_file_path
 
 	with open(state_file_path) as f:
 		geodata_county = json.load(f)
 
 	zip_fips_path = 'app/static/data/ZIP-COUNTY-FIPS_2018-03.csv'
-	zip_fips_path = 'C:/programming/covid_map/' + zip_fips_path
+	# zip_fips_path = 'C:/programming/covid_map/' + zip_fips_path
 	zip_fips_lookup = pd.read_csv(zip_fips_path, dtype={'STCOUNTYFP': 'str'})
 
 	return geodata_county, zip_fips_lookup
@@ -92,9 +92,9 @@ def get_data():
 # run full process
 def run_process(get_data_flag):
 	county_path = 'app/static/data/data_county.csv'
-	county_path = 'C:/programming/covid_map/' + county_path
+	# county_path = 'C:/programming/covid_map/' + county_path
 	geodata_county_path = 'app/static/data/geodata_county.json'
-	geodata_county_path = 'C:/programming/covid_map/' + geodata_county_path
+	# geodata_county_path = 'C:/programming/covid_map/' + geodata_county_path
 
 	if get_data_flag == True:
 		debug_msg("Loaded New Data")
