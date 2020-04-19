@@ -161,4 +161,5 @@ def run_process(get_data_flag):
 
 
 def debug_msg(msg):
+	#added comment
 	print(time.strftime("[%m/%d/%Y %H:%M:%S] ") + msg)
