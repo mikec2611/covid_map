@@ -29,6 +29,17 @@ $(document).ready(function($) {
 
 	// load map
 	map.on('load', function() {
+		// // put layer under labels
+		// var layers = map.getStyle().layers;
+		// var firstSymbolId; // Find the index of the first symbol layer in the map style
+		// for (var i = 0; i < layers.length; i++) {
+		// 	if (layers[i].type === 'symbol') {
+		// 		firstSymbolId = layers[i].id;
+		// 		// firstSymbolId = layers[0].id;
+		// 		break;
+		// 	};
+		// };
+
 		// add data source
 		map.addSource('us_counties', {
 			'type': 'geojson',
@@ -43,8 +54,9 @@ $(document).ready(function($) {
 			'layout': {},
 			'paint': {
 				'fill-outline-color': 'black',
-				'fill-opacity': 0.8
-			}
+				'fill-opacity': 0.65
+			},
+			// firstSymbolId
 		});
 
 		update_map(new Date(last_date_sld).getTime() / 1000)
@@ -52,20 +64,26 @@ $(document).ready(function($) {
 
 
 	// create date slider
+	var zoom_threshold = 6.5
     $date_slider.slider({
         range: false,
         min: new Date(first_date_sld).getTime() / 1000,
         max: new Date(last_date_sld).getTime() / 1000,
         step: 86400,
-        value: new Date(last_date_sld).getTime() / 1000
-    }).ready(function(){    	
-    	
+        value: new Date(last_date_sld).getTime() / 1000,
+        slide: function(event, ui) {
+        	if (map.getZoom() >= zoom_threshold) {
+        		update_map(ui.value)
+        	};
+        },
+        stop: function(event, ui){
+        	if (map.getZoom() < zoom_threshold){
+        		update_map(ui.value)
+        	};
+        }
     });
 
     // events that update the map
-	$date_slider.on("slide", function(event, ui) { 
-		update_map(ui.value)
-	});
 	$("input.rb_dataopt").change(function(){
 		update_map($date_slider.slider("option","value"))
 	});
@@ -91,17 +109,22 @@ $(document).ready(function($) {
 
 	// calculate which legend stops to use
 	function calc_legend_stops(curr_datatype){
-		if (curr_datatype != "deaths"){
+		if (curr_datatype == "cases"){
 			legend_stops = [
 				[0, 'gray'],
 				[5, 'green']
 			];
-		} else{
+		} else if (curr_datatype == "deaths") {
 			legend_stops = [
 				[0, 'gray'],
 				[100, 'red']
 			];
-		};
+		} else {
+			legend_stops = [
+				[0, 'gray'],
+				[100, 'orange']
+			];
+		}
 
 		return legend_stops;
 	};

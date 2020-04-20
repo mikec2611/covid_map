@@ -6,11 +6,6 @@ import pandas as pd
 import json
 
 @app.route('/')
-@app.route('/index')
-def index():
-	return render_template()
-
-@app.route('/covid_map')
 def covid_map():
 	data_county, geodata_county, date_list = cm.run_process(get_data_flag=False)
 	
