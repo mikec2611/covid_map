@@ -8,19 +8,17 @@ import time
 
 # data sources
 # covid - NYT (github)
-# shapefiles - OpenDataDE/State-zip-code-GeoJSON (github)
-# dips->zip conversion - https://data.world/niccolley/us-zipcode-to-county-state/workspace/file?filename=ZIP-COUNTY-FIPS_2018-03.csv
+# shapefiles - https://catalog.data.gov/dataset/tiger-line-shapefile-2017-nation-u-s-current-county-and-equivalent-national-shapefile
 # county population - data.world in progress
 
-# app_rel_path = "C:/programming/covid_map"
-app_rel_path = "/home/mc2615/covid_map"
+app_rel_path = "C:/programming/covid_map"
+# app_rel_path = "/home/mc2615/covid_map"
 
 def get_data_covid():
-	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data//master/us-counties.csv',
+	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
 						    dtype={'fips': 'str'}
 							)
 	df_county.loc[df_county["county"] == "New York City", "fips"] = "36061"
-	# print(df_county.loc[df_county["county"] == "New York City"])
 	df_county.columns = ["date","county","state","fips","cases","deaths"]
 	df_county["date_id"] = df_county["date"].str.replace('-','')
 
@@ -34,44 +32,13 @@ def get_data_covid():
 	
 	return df_county
 
-
-def get_data_geo_bulk():
-	# zip geojson
-	geojson_path = app_rel_path + '/app/static/data/state_county_geojson/'
-	geojson_files = os.listdir(geojson_path)
-	all_county_features = []
-	
-	for state_county_file in geojson_files:
-		debug_msg("loading: '" + state_county_file + "'")
-		with open(geojson_path + state_county_file) as state_county_data:
-			geodata_state = json.load(state_county_data)
-			for feature in geodata_state["features"]:
-				all_county_features.append(feature)
-
-	geodata_county = FeatureCollection(all_county_features)
-
-	#fips data for zip conversion
-	zips_path = app_rel_path + '/app/static/data/ZIP-COUNTY-FIPS_2018-03.csv'
-	zip_fips_lookup = pd.read_csv(zips_path, dtype={'ZIP': 'str', 'STCOUNTYFP': 'str'})
-
-	return(geodata_county, zip_fips_lookup)
-
-
 def get_data_geo():
-	#dc_district_of_columbia_zip_codes_geo
-	#pa_pennsylvania_zip_codes_geo
-	#nj_new_jersey_zip_codes_geo
-	#ca_california_zip_codes_geo
+	geojson_file = app_rel_path + '/app/static/data/us_county.json'
 
-	state_file_path = app_rel_path + '/app/static/data/state_county_geojson/nj_new_jersey_zip_codes_geo.json'
+	with open(geojson_file) as county_geojson:
+			geodata_county = json.load(county_geojson)
 
-	with open(state_file_path) as f:
-		geodata_county = json.load(f)
-
-	zip_fips_path = app_rel_path + '/app/static/data/ZIP-COUNTY-FIPS_2018-03.csv'
-	zip_fips_lookup = pd.read_csv(zip_fips_path, dtype={'STCOUNTYFP': 'str'})
-
-	return geodata_county, zip_fips_lookup
+	return(geodata_county)
 
 def get_data_pop():
 	data_pop_path = app_rel_path +'/app/static/data/pop-by-zip-code.csv'
@@ -83,12 +50,9 @@ def get_data_pop():
 
 def get_data():
 	data_county = get_data_covid()
-	# geodata_county, zip_fips_lookup = get_data_geo()
-	geodata_county, zip_fips_lookup = get_data_geo_bulk()
-	data_pop = get_data_pop()
-
-	return data_county, geodata_county, data_pop, zip_fips_lookup
-
+	geodata_county = get_data_geo()
+	# data_pop = get_data_pop()
+	return data_county, geodata_county#, data_pop
 
 # run full process
 def run_process(get_data_flag):
@@ -97,61 +61,28 @@ def run_process(get_data_flag):
 
 	if get_data_flag == True:
 		debug_msg("Loading New Data")
-		data_county, geodata_county, data_pop, zip_fips_lookup = get_data()
-
-		# create record for every zipcode
-		# data_county = data_county.join(zip_fips_lookup[["STCOUNTYFP", "ZIP"]].set_index('STCOUNTYFP'), on='fips')
-		data_pop = data_pop.join(zip_fips_lookup[["ZIP", "STCOUNTYFP"]].set_index('ZIP'), on='zip_code')
-
-		# add pop data to county data
-		data_zip_pop = data_county.join(data_pop.set_index('STCOUNTYFP'), on='fips')
-		data_zip_pop= data_zip_pop[["zip_code", "population"]]
-		data_zip_pop= data_zip_pop.drop_duplicates(subset="zip_code")
-		data_zip_pop.dropna(inplace=True)
-		data_zip_pop = data_zip_pop[data_zip_pop["population"] != 0]
+		# data_county, geodata_county, data_pop = get_data()
+		data_county, geodata_county = get_data()
 
 		# get list of dates in data
 		date_list = data_county["date_id"].unique().tolist()
 
 		# add properties to each county geojson with covid data
-		geodata_county_features = [] # deletes features with no data
-		debug_curr_state = ""
-		debug_state_ctr = 0
-		
-		for feature in geodata_county["features"]:		
-			zipcode = feature["properties"]["ZCTA5CE10"]
-			fips_data = zip_fips_lookup.loc[zip_fips_lookup["ZIP"] == zipcode]
-
-			if debug_curr_state != feature["properties"]["STATEFP10"]:
-				debug_curr_state = feature["properties"]["STATEFP10"]
-				debug_state_ctr+=1
-				debug_msg("Populating state: " + str(debug_curr_state) + " [" + str(debug_state_ctr) + "]")
+		county_ctr = 0
+		for feature in geodata_county["features"]:	
+			
+			feature["id"] = county_ctr
+			geo_county_fips = feature["properties"]["GEOID"]
+			fips_data = data_county.loc[data_county["fips"] == geo_county_fips]
 
 			if not fips_data.empty:
-				# debug_duplicate = True
-				for fips in fips_data["STCOUNTYFP"]:
-					feature_data = data_county.loc[data_county["fips"] == fips]
-					zip_pop = data_zip_pop.loc[data_zip_pop["zip_code"] == zipcode]["population"]
+				for date_val in date_list:
+					date_data = fips_data.loc[fips_data["date_id"] == date_val]
+					if not date_data.empty:
+						feature["properties"]["cases_" + date_val] = date_data["cases"].values[0].astype("float")
+						feature["properties"]["deaths_" + date_val] = date_data["deaths"].values[0].astype("float")
 
-					if (len(feature_data) > 0) and (not zip_pop.empty):
-						zip_pop = zip_pop.values[0]
-						for date_val in date_list:
-							date_data = feature_data.loc[feature_data["date_id"] == date_val]
-							if not date_data.empty:
-								feature["properties"]["population"] = zip_pop
-								feature["properties"]["cases_" + date_val] = date_data["cases"].values[0].astype("float")
-								feature["properties"]["deaths_" + date_val] = date_data["deaths"].values[0].astype("float")
-								# feature["properties"]["casePC_" + date_val] = round(feature["properties"]["cases_" + date_val] / zip_pop,1) * 100
-								# feature["properties"]["deathsPercCases_" + date_val] = round(feature["properties"]["deaths_" + date_val] / feature["properties"]["cases_" + date_val],1) * 100
-
-						geodata_county_features.append(feature)
-
-					# if debug_duplicate == False: 
-						break
-
-					# fips = str(fips_data["STCOUNTYFP"].values[0])
-
-		geodata_county["features"] = geodata_county_features
+			county_ctr+=1
 
 		# save data
 		data_county.to_csv(county_path)

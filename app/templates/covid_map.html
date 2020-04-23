@@ -7,7 +7,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+		<script src="https://kit.fontawesome.com/b309449b5a.js" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/covid_map.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.number.min.js') }}"></script>
 
 		<script type="text/javascript">
 			var geodata_county = {{ geodata_county|tojson }}
@@ -16,8 +18,30 @@
 
 	</head>
 	<body>
+		<!-- top bar-->
+		<div id="top_bar" class="control_box">
+			<div id="btn_info" class="top_bar_section"><i class="fas fa-info-circle"></i></div>
+			<div id="page_title" class="top_bar_section">Covid19 U.S. County Map</div>
+			<div id="data_update" class="top_bar_section">Data Range: <span id="data_update_val"></span></div>
+			<div id="top_bar_spacer" class="top_bar_section"></div>
+		</div>
+
 		<!-- map -->
 		<div id="map"></div>
+
+		<!-- tooltip box -->
+		<table id="tooltip_box" class="control_box">
+			<thead id="tooltip_header">
+				<tr>
+					<th colspan="2" id="tooltip_header_name"></th>
+				</tr>
+				<tr>
+					<th colspan="2" id="tooltip_header_date"></th>
+				</tr>
+			</thead>
+			<tbody id="tooltip_body">
+			</tbody>
+		</table>
 
 		<!-- date type control box -->
 		<table id="data_options_box" class="control_box">
@@ -35,11 +59,21 @@
 						<input id="dataopt_deaths" class="rb_dataopt" type="radio" name="dataopt_type" value="deaths"># of Deaths</input>
 					</td>
 				</tr>
-				<tr>
+<!-- 				<tr>
 					<td class="rb_dataopt_box" title="Cases per Capita">
 						<input id="dataopt_casePC" class="rb_dataopt" type="radio" name="dataopt_type" value="casePC">Cases Per Capita</input>
 					</td>
+				</tr> -->
+			</tbody>
+		</table>
+
+		<table id="legend_box" class="control_box">
+			<thead>
+				<tr>
+					<th colspan="2" id="legend_data_type"></th>
 				</tr>
+			</thead>
+			<tbody id="legend_body">
 			</tbody>
 		</table>
 

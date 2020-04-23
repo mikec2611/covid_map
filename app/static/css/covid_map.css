@@ -1,15 +1,72 @@
+
+
 body{
 	margin:0;
 	padding: 0;
 	font-family:sans-serif;
+	overflow:hidden;
 }
 
+/*universal*/
 .control_box{
 	background-color:black;
 	border:1px solid gray;
 	box-shadow: 4px 4px 8px 1px black;
 }
 
+/*top bar*/
+#top_bar{
+	position:absolute;
+	width:100%;
+	height:40px;
+	left:-1px;
+	top:-1px;
+	z-index:1100;
+	color:white;
+}
+.top_bar_section{
+	position:relative;
+	left:0;
+	top:0;
+	height:100%;
+	text-align:center;
+	float:left;
+	white-space: nowrap;
+  	overflow: hidden;
+}
+#btn_info{
+	width:40px;
+	font-size:30px;
+	cursor:pointer;
+}
+#btn_info:hover{
+	color:orange;
+}
+#btn_info > i.fas {
+  line-height: 37px;
+}
+#page_title{
+	width:calc(80% - 50px);
+	font-size: 30px;
+    font-weight: bold;
+	line-height:40px;
+	text-indent: calc(20% + 50px);
+}
+#data_update{
+	width:20%;
+	font-size:20px;
+	line-height:40px;
+	text-align:right;
+	/*padding-right:5px;*/
+}
+#data_update_val{
+	font-size:16px;
+}
+#top_bar_spacer{
+	width:10px;
+}
+
+/*map*/
 #map{
 	position:absolute;
 	top:0;
@@ -18,28 +75,28 @@ body{
 	z-index:1000;
 }
 
+/*date slider box*/
 #slider_container{
     position: absolute;
     bottom: 30;
-    width: 80%;
-    left: 10%;
+    width: 50%;
+    left: 1.5%;
     height: 100px;
     z-index: 1100;
+   	white-space: nowrap;
+  	overflow: hidden;
 }
-
 #date_slider{
     position: relative;
     width: 90%;
     left: 5%;
     top: 20%;
 }
-
 #slider_info_box{
     color: white;
     font-size: 32px;
     text-align: center;
 }
-
 .slider_val_box{
 	color: gray;
     font-size: 13px;
@@ -55,12 +112,12 @@ body{
     padding-right: 30px;
 }
 
-
+/*data options box*/
 #data_options_box{
 	position:absolute;
 	z-index:1100;
 	/*height:15%;*/
-	min-width: 300px;
+	min-width: 200px;
 	left:1.5%;
 	top:20%;
 	color:white;
@@ -80,3 +137,58 @@ body{
 	margin-right:10%;
 }
 
+/*legend*/
+#legend_box{
+	position:absolute;
+	z-index:1100;
+	min-width: 200px;
+	left:1.5%;
+	top:50%;
+	color:white;
+	padding:5px;
+	display:none;
+}
+#legend_data_type{
+	text-align:left;
+	text-transform:capitalize;
+	font-size: 20px;
+}
+td.legend_label{
+	width:60%;
+	font-style:italic;
+	text-indent:5px;
+}
+td.legend_swatch{
+	width:40%;
+	border:1px solid gray;
+}
+
+/*tooltip box*/
+#tooltip_box{
+	position:absolute;
+	color:white;
+	padding:5px;
+	height:100px;
+    z-index: 1100;
+    display:none;
+}
+#tooltip_header{
+	text-align:center;
+}
+td.tooltip_data_label{
+	text-indent:5px;
+}
+td.tooltip_data_val{
+	text-align:right;
+	padding-right:5px;
+}
+
+#county_info_box{
+    position: absolute;
+    bottom: 30;
+    width: 35%;
+    right: 1.5%;
+    color:white;
+    z-index: 1100;
+    display:none;
+}
