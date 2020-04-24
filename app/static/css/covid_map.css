@@ -121,9 +121,12 @@ body{
 	left:1.5%;
 	top:20%;
 	color:white;
+	padding:5px;
 }
 #dataopt_title{
 	font-size: 24px;
+	border-bottom:1px solid white;
+	padding-bottom:5px;
 }
 
 .rb_dataopt_box{
@@ -141,7 +144,7 @@ body{
 #legend_box{
 	position:absolute;
 	z-index:1100;
-	min-width: 200px;
+	min-width:200px;
 	left:1.5%;
 	top:50%;
 	color:white;
@@ -152,15 +155,21 @@ body{
 	text-align:left;
 	text-transform:capitalize;
 	font-size: 20px;
+	padding-bottom: 5px;
+    border-bottom: 1px solid white;
+}
+
 }
 td.legend_label{
 	width:60%;
 	font-style:italic;
-	text-indent:5px;
 }
 td.legend_swatch{
 	width:40%;
 	border:1px solid gray;
+}
+#first_legend_row{
+	height:10px;
 }
 
 /*tooltip box*/
@@ -183,12 +192,22 @@ td.tooltip_data_val{
 	padding-right:5px;
 }
 
+
+/* county info box*/
 #county_info_box{
     position: absolute;
     bottom: 30;
-    width: 35%;
+    width: 44.5%;
     right: 1.5%;
     color:white;
     z-index: 1100;
+    table-layout: fixed;
     display:none;
+}
+#ci_close{
+	text-align:right;
+	padding-right:5px;
+}
+#ci_close > i{
+	cursor:pointer;
 }

@@ -7,6 +7,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 		<script src="https://kit.fontawesome.com/b309449b5a.js" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/covid_map.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.number.min.js') }}"></script>
@@ -21,7 +22,7 @@
 		<!-- top bar-->
 		<div id="top_bar" class="control_box">
 			<div id="btn_info" class="top_bar_section"><i class="fas fa-info-circle"></i></div>
-			<div id="page_title" class="top_bar_section">Covid19 U.S. County Map</div>
+			<div id="page_title" class="top_bar_section">Covid19 US County Map</div>
 			<div id="data_update" class="top_bar_section">Data Range: <span id="data_update_val"></span></div>
 			<div id="top_bar_spacer" class="top_bar_section"></div>
 		</div>
@@ -67,6 +68,7 @@
 			</tbody>
 		</table>
 
+		<!-- legend -->
 		<table id="legend_box" class="control_box">
 			<thead>
 				<tr>
@@ -90,6 +92,22 @@
 						<div id='date_slider'></div>
 					</td>
 				</tr>
+			</tbody>
+		</table>
+
+
+		<table id="county_info_box" class="control_box">
+			<thead>
+				<tr>
+					<th id="ci_close"><i class="far fa-window-close"></i></th>
+				</tr>
+			</thead>
+			<tbody id="county_info_body">
+				<tr>
+					<td>
+						<canvas id="county_chart_container"></canvas>
+					</td>
+				</tr>s
 			</tbody>
 		</table>
 	</body>

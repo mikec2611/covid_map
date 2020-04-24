@@ -9,4 +9,4 @@ import json
 def covid_map():
 	data_county, geodata_county, date_list = cm.run_process(get_data_flag=False)
 	
-	return render_template('covid_map.html', date_list=date_list, data_county=data_county, geodata_county=geodata_county)
+	return render_template('covid_map.html', date_list=date_list, geodata_county=geodata_county)
