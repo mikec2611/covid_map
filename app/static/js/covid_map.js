@@ -36,8 +36,11 @@ $(document).ready(function($) {
 	// get dates
 	var first_date = date_list[0]
 	var last_date = date_list[date_list.length - 1]
-	var first_date_sld = first_date.substring(0,4) + "." + first_date.substring(4,6) + "." + first_date.substring(6,8)
-	var last_date_sld = last_date.substring(0,4) + "." + last_date.substring(4,6) + "." + last_date.substring(6,8)
+
+	var first_date_sld = new Date(first_date.substring(0,4), first_date.substring(4,6) -1, first_date.substring(6,8))
+	var last_date_sld = new Date(last_date.substring(0,4), last_date.substring(4,6) -1, last_date.substring(6,8))
+	// var first_date_sld = first_date.substring(0,4) + "." + first_date.substring(4,6) + "." + first_date.substring(6,8)
+	// var last_date_sld = last_date.substring(0,4) + "." + last_date.substring(4,6) + "." + last_date.substring(6,8)
 	var first_date_format = format_date(first_date_sld)
 	var last_date_format = format_date(last_date_sld)
 	// var first_date_val = new Date(first_date_sld) / 1000
@@ -111,18 +114,19 @@ $(document).ready(function($) {
 		});
 
 		// start map
-		update_map(new Date(last_date_sld) / 1000);
+		update_map(last_date_sld / 1000);
 	});
 
 	// create date slider
 	var zoom_threshold = 6.5
     $date_slider.slider({
         range: false,
-        min: new Date(first_date_sld) / 1000,
-        max: new Date(last_date_sld) / 1000,
+        min: first_date_sld / 1000,
+        max: (last_date_sld / 1000)  + 86400,
         step: 86400,
-        value: new Date(last_date_sld) / 1000,
+        value: last_date_sld / 1000,
         slide: function(event, ui) {
+        	console.log(new Date (ui.value * 1000))
         	update_map(ui.value)
         }
     });
