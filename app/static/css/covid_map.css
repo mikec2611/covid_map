@@ -142,9 +142,12 @@ body{
 	height:15px;
 	margin-right:10%;
 }
-.ci_options_box{
+#ci_options_box{
 	position:absolute;
 	width:50%;
+	padding-left: 5px;
+    padding-top: 5px;
+    text-align: left;
 }
 
 /*legend*/

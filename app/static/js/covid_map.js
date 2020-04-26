@@ -6,6 +6,9 @@ var $selected_county = "";
 var $selected_county_prop = "";
 var county_chart;
 
+var chartcolor_1 = "orange"
+var chartcolor_2 = "forestgreen"
+
 $(document).ready(function($) {
 	$(document).mousemove( function(e) {
 	   mouseX = e.pageX; 
@@ -315,48 +318,51 @@ $(document).ready(function($) {
 			county_chart.destroy()
 		};
 
-		var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
+		// var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
 		var chart_type = $("input.rb_dataopt_type_chart:checked").val();
-		if (chart_metric == "cases"){
-			if (chart_type == "cumulative"){
-				var chartdata_cases = chart_data[1]
-				var chardata_type = "line";
-			} else if (chart_type == "daily"){
-				var chartdata_cases = chart_data[3]
-				var chardata_type = "bar";
-			};
-		} else if (chart_metric == "deaths"){
-			if (chart_type == "cumulative"){
-				var chartdata_deaths = chart_data[2]
-				var chardata_type = "line";
-			} else if (chart_type == "daily"){
-				var chartdata_deaths = chart_data[4]
-				var chardata_type = "bar";
-			};
+		if (chart_type == "cumulative"){
+			var chardata_type = "line";
+			chartdata = [{	
+				type: chardata_type,
+	            label: 'Reported Deaths',
+	            data: chart_data[2],
+	            yAxisID: 'deaths',
+	            borderColor: chartcolor_1,
+	            fill: false
+	        },
+	        {	
+	        	type: chardata_type,
+	            label: 'Reported Cases',
+	            data: chart_data[1],
+	            yAxisID: 'cases',
+	            borderColor: chartcolor_2,
+	            fill: false
+	        }]
+		} else if (chart_type == "daily"){
+			var chardata_type = "bar";
+			chartdata = [{		
+				type: chardata_type,	     		
+	            label: 'Reported Deaths',
+	            data: chart_data[4],
+	            yAxisID: 'deaths',
+	            borderColor: chartcolor_1,
+	            backgroundColor: chartcolor_1
+	        },
+	        {	
+	        	type: chardata_type,
+	            label: 'Reported Cases',
+	            data: chart_data[3],
+	            yAxisID: 'cases',
+	            borderColor: chartcolor_2,
+	            backgroundColor: chartcolor_2
+	        }]
 		};
-		
+
 		county_chart = new Chart(chart_container, {
 			type: chardata_type,
 		    data: {
 		        labels: chart_data[0],
-		        datasets: [
-		        	{
-			     		// type: 'line',
-			            label: 'Reported Deaths',
-			            data: chartdata_deaths,
-			            yAxisID: 'deaths',
-			            borderColor:"orange",
-			            backgroundColor:"orange",
-			            fill: false
-			        },
-			        {	
-			            label: 'Reported Cases',
-			            data: chartdata_cases,
-			            yAxisID: 'cases',
-			            borderColor:"forestgreen",
-			            backgroundColor:"forestgreen"
-			        }
-		        ]
+		        datasets: chartdata
 		    },
 		    options: {
 		        scales: {
@@ -419,6 +425,36 @@ $(document).ready(function($) {
 		        	labels:{
 		        		fontColor:"white"
 		        	}
+		        },
+		        tooltips:{
+	        		callbacks: {
+	        			title: function(tooltipItem, data){
+		           			date_val = tooltipItem[0].xLabel
+							date_val = new Date(date_val.substring(0,4), date_val.substring(4,6) -1, date_val.substring(6,8))
+            	 			date_val = format_date(date_val).substring(0,8)
+            	 			new_tooltip = date_val
+            	 			return new_tooltip
+	        			},
+				        label: function(tooltipItem, data) {
+				        	var label = data.datasets[tooltipItem.datasetIndex].label
+				            var value = $.number(tooltipItem.value)
+				            return label + ": " + value
+				    	},
+				    	labelColor: function(tooltipItem, chart) {
+				    		if (tooltipItem.datasetIndex == 0){
+				    			var colors = {
+			                        borderColor: chartcolor_1,
+			                        backgroundColor: chartcolor_1
+			                    };
+				    		} else if (tooltipItem.datasetIndex == 1){
+								var colors = {
+			                        borderColor: chartcolor_2,
+			                        backgroundColor: chartcolor_2
+			                    };
+				    		}
+		                    return colors
+		                },
+                    },
 		        }
 		    }
 		});

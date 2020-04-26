@@ -97,6 +97,8 @@ def run_process(get_data_flag):
 		for feature in geodata_county["features"]:	
 			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]:
 
+
+
 				feature["id"] = county_ctr
 				feature["properties"]["state_name"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_name"].values[0]
 				feature["properties"]["state_abbr"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_abbr"].values[0]
@@ -111,11 +113,19 @@ def run_process(get_data_flag):
 						if not date_data.empty:
 							date_cases = date_data["cases"].values[0].astype("float")
 							date_deaths = date_data["deaths"].values[0].astype("float")
+							date_casesPD = date_cases - prior_cases
+							date_deathsPD = date_deaths - prior_deaths
+							if date_casesPD < 0:
+								date_casesPD = 0
+							if date_deathsPD < 0:
+								date_deathsPD = 0
 
 							feature["properties"]["cases_" + date_val] = date_cases
 							feature["properties"]["deaths_" + date_val] = date_deaths
-							feature["properties"]["casesPD_" + date_val] = date_cases - prior_cases
-							feature["properties"]["deathsPD_" + date_val] = date_deaths - prior_deaths
+
+
+							feature["properties"]["casesPD_" + date_val] = date_casesPD
+							feature["properties"]["deathsPD_" + date_val] = date_deathsPD
 
 							if date_cases > 0:
 								prior_cases = date_cases
@@ -124,6 +134,9 @@ def run_process(get_data_flag):
 
 				saved_features.append(feature)
 				county_ctr+=1
+				# if feature["properties"]["NAMELSAD"] == "Cherry County":
+				# 	print(feature)
+
 		# removes shapes that arent displayed
 		geodata_county["features"] = saved_features
 
