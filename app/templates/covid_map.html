@@ -14,6 +14,7 @@
 
 		<script type="text/javascript">
 			var geodata_county = {{ geodata_county|tojson }}
+			var geodata_state = {{ geodata_state|tojson }}
 			var date_list = {{ date_list|tojson }}
 		</script>
 
@@ -44,20 +45,23 @@
 			</tbody>
 		</table>
 
-		<!-- date type control box -->
+		<!-- data type control box -->
 		<table id="data_options_box" class="control_box">
-			<thead>
-				<th id="dataopt_title" colspan="2">Data Type</th>
-			</thead>
+
+			<!-- metric -->
+
 			<tbody>
 				<tr>
+					<td class="dataopt_title" colspan="2">Metric</ts>
+				</tr>
+				<tr>
 					<td class="rb_dataopt_box">
-						<input id="dataopt_cases" class="rb_dataopt" type="radio" name="dataopt_type" value="cases" checked="checked"># of Cases</input>
+						<input id="dataopt_cases" class="rb_dataopt_metric rb_dataopt" type="radio" name="dataopt_metric" value="cases" checked="checked">Reported Cases</input>
 					</td>
 				</tr>
 				<tr>
 					<td class="rb_dataopt_box">
-						<input id="dataopt_deaths" class="rb_dataopt" type="radio" name="dataopt_type" value="deaths"># of Deaths</input>
+						<input id="dataopt_deaths" class="rb_dataopt_metric rb_dataopt" type="radio" name="dataopt_metric" value="deaths">Reported Deaths</input>
 					</td>
 				</tr>
 <!-- 				<tr>
@@ -65,8 +69,23 @@
 						<input id="dataopt_casePC" class="rb_dataopt" type="radio" name="dataopt_type" value="casePC">Cases Per Capita</input>
 					</td>
 				</tr> -->
+
+				<!-- data type -->
+				<tr><td colspan="2" class="dataopt_spacer"></td></tr>
+				<tr><td colspan="2" class="dataopt_title">Data Type</td></tr>
+				<tr>
+					<td class="rb_dataopt_box">
+						<input id="dataopt_cumulative" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="cumulative" checked="checked">Cumulative</input>
+					</td>
+				</tr>
+				<tr>
+					<td class="rb_dataopt_box">
+						<input id="dataopt_daily" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="daily" >Daily</input>
+					</td>
+				</tr>
 			</tbody>
 		</table>
+
 
 		<!-- legend -->
 		<table id="legend_box" class="control_box">
@@ -96,18 +115,31 @@
 		</table>
 
 
+		<!-- county info box -->
 		<table id="county_info_box" class="control_box">
 			<thead>
 				<tr>
+					<th id="ci_options_metric ci_options_box">
+						<input id="dataopt_cases_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="cases" checked="checked">Reported Cases</input>
+
+						<input id="dataopt_deaths_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="deaths">Reported Deaths</input>
+					</th>
+
+					<th id="ci_options_type ci_options_box">
+						<input id="dataopt_cumulative_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="cumulative" checked="checked">Cumulative</input>
+
+						<input id="dataopt_daily_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="daily">Daily</input>
+					</th>
+
 					<th id="ci_close"><i class="far fa-window-close"></i></th>
 				</tr>
 			</thead>
 			<tbody id="county_info_body">
 				<tr>
-					<td>
+					<td colspan="3">
 						<canvas id="county_chart_container"></canvas>
 					</td>
-				</tr>s
+				</tr>
 			</tbody>
 		</table>
 	</body>

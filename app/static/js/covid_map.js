@@ -4,6 +4,7 @@ var $active_county = "";
 var $active_county_prop = "";
 var $selected_county = "";
 var $selected_county_prop = "";
+var county_chart;
 
 $(document).ready(function($) {
 	$(document).mousemove( function(e) {
@@ -32,6 +33,7 @@ $(document).ready(function($) {
 
 	console.log(date_list)
 	console.log(geodata_county)
+	console.log(geodata_state)
 
 	// get dates
 	var first_date = date_list[0]
@@ -60,13 +62,17 @@ $(document).ready(function($) {
 			'type': 'geojson',
 			'data': geodata_county
 		});
+		map.addSource('us_states', {
+			'type': 'geojson',
+			'data': geodata_state
+		});
 
-		// add default layer
+		// add county layer
 		map.addLayer({
 			'id': 'us_counties',
 			'type': 'fill',
 			'source': 'us_counties',
-			'layout': {},
+			// 'layout': {},
 			'paint': {
 				'fill-opacity': ['case',
 									['boolean', ['feature-state', 'hover'], false],
@@ -80,18 +86,30 @@ $(document).ready(function($) {
 									],
 			}
 		});
+		// add state layer
+		map.addLayer({
+			'id': 'us_states',
+			'type': 'line',
+			'source': 'us_states',
+			'paint': {
+				'line-width': 2.5,
+				// 'line-color': "#cccccc",
+				'line-color': "black",
+				// 'line-dasharray': [2, 2],
+			}
+		});
 
 		// events when click on layer. show county info
 		map.on('click', 'us_counties', function(e) {
 			event_shp = e.features[0]
 			if ($selected_county.id != event_shp.id){
-				if ($selected_county != ""){
-					toggle_highlight_shp($selected_county.id, false)
-				};
+				// if ($selected_county != ""){
+				// 	toggle_highlight_shp($selected_county.id, false)
+				// };
 
 				$selected_county = event_shp
 				$selected_county_prop = event_shp.properties
-				toggle_highlight_shp(event_shp.id, true)
+				// toggle_highlight_shp(event_shp.id, true)
 				show_county_info()
 			};
 		});
@@ -100,17 +118,25 @@ $(document).ready(function($) {
 		map.on('mousemove', 'us_counties', function(e) {
 			event_shp = e.features[0]
 			if ($active_county.id != event_shp.id){
+				if ($active_county != ""){
+					toggle_highlight_shp($active_county.id, false)
+				};
+
 				$active_county = event_shp
 				$active_county_prop = event_shp.properties
+				toggle_highlight_shp(event_shp.id, true)
 				update_tooltip()
 			};
 		});
 
 		// events when mouse leaves layer. hide tooltip
 		map.on('mouseleave', 'us_counties', function(e) {
+			if ($active_county != ""){
+				toggle_highlight_shp($active_county.id, false)
+			};
 			$active_county = ""
 			$active_county_prop = ""
-			$tooltip_box.hide()
+			$tooltip_box.hide() 
 		});
 
 		// start map
@@ -126,19 +152,23 @@ $(document).ready(function($) {
         step: 86400,
         value: last_date_sld / 1000,
         slide: function(event, ui) {
-        	console.log(new Date (ui.value * 1000))
         	update_map(ui.value)
         }
     });
 
     // events that update the map
 	$("input.rb_dataopt").change(function(){
-		update_map($date_slider.slider("option","value"))
+		update_map($date_slider.slider("option","value"));
 	});
+
+	// update the chart
+	$("input.rb_dataopt_chart").change(function(){
+		update_ci_chart();
+	})
 
 	// close county info box
 	$('#ci_close > i').on('click', function(){
-		toggle_ci_box(false)
+		toggle_ci_box(false);
 	});
 
 	// ---functions
@@ -147,9 +177,14 @@ $(document).ready(function($) {
 	function update_map(date_val){
 		var curr_date = new Date(date_val * 1000)
 		var curr_date_id = curr_date.toISOString().split('T')[0]
-		var curr_datatype = $("input.rb_dataopt:checked").val();
-		var curr_lookup = curr_datatype + "_" + curr_date_id.replace(/-/g, "")
-		var legend_stops = calc_legend_stops(curr_datatype)
+		var curr_datatype_metric = $("input.rb_dataopt_metric:checked").val();
+		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
+		if (curr_datatype_type == "daily"){
+			var curr_lookup = curr_datatype_metric + "PD_" + curr_date_id.replace(/-/g, "")	;
+		} else if (curr_datatype_type == "cumulative"){
+			var curr_lookup = curr_datatype_metric + "_" + curr_date_id.replace(/-/g, "");
+		};
+		var legend_stops = calc_legend_stops(curr_datatype_metric)
 
 		map.setPaintProperty('us_counties', 'fill-color', {
 			property: curr_lookup,
@@ -164,8 +199,8 @@ $(document).ready(function($) {
 	};
 
 	// calculate which legend stops to use
-	function calc_legend_stops(curr_datatype){
-		if (curr_datatype == "cases"){
+	function calc_legend_stops(curr_datatype_metric){
+		if (curr_datatype_metric == "cases"){
 			legend_stops = [
 				[0, 'darkgray'],
 				[10, 'green'],
@@ -173,7 +208,7 @@ $(document).ready(function($) {
 				[1000, 'darkorange'],
 				[10000, 'red']
 			];
-		} else if (curr_datatype == "deaths") {
+		} else if (curr_datatype_metric == "deaths") {
 			legend_stops = [
 				[0, 'darkgray'],
 				[1, 'green'],
@@ -193,7 +228,7 @@ $(document).ready(function($) {
 
 	// update legend
 	function update_legend(legend_stops){
-		$('#legend_data_type').text($("input.rb_dataopt:checked").val())
+		$('#legend_data_type').text("Reported " + $("input.rb_dataopt_metric:checked").val())
 		$("tr.legend_row").remove()
 
 		// spacer row
@@ -236,12 +271,12 @@ $(document).ready(function($) {
 		var county_data = $active_county_prop;
 
 		// update header
-		$('#tooltip_header_name').text(county_data["NAMELSAD"] + ", " + county_data["STATEFP"])
+		$('#tooltip_header_name').text(county_data["NAMELSAD"] + ", " + county_data["state_abbr"])
 		$('#tooltip_header_date').text(format_date(curr_date))
 
 		// create row for each displayed prop
 		var displayed_properties = ["cases_" + curr_date_id, "deaths_" + curr_date_id]
-		var label_display = ["Cases", "Deaths"]
+		var label_display = [" Reported Cases", "Reported Deaths"]
 		$("tr.tooltip_data_row").remove()
 		$.each(displayed_properties, function(prop_ind, prop) {
 			label_text = label_display[prop_ind]
@@ -274,37 +309,116 @@ $(document).ready(function($) {
 	function load_chart(chart_data){
 		var county_data = $selected_county_prop;
 		var chart_container = $("#county_chart_container")
+		
+		// destroy existing chart if it exists
+		if (typeof(county_chart) != "undefined"){
+			county_chart.destroy()
+		};
 
-		var county_chart = new Chart(chart_container, {
-		    type: 'bar',
+		var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
+		var chart_type = $("input.rb_dataopt_type_chart:checked").val();
+		if (chart_metric == "cases"){
+			if (chart_type == "cumulative"){
+				var chartdata_cases = chart_data[1]
+				var chardata_type = "line";
+			} else if (chart_type == "daily"){
+				var chartdata_cases = chart_data[3]
+				var chardata_type = "bar";
+			};
+		} else if (chart_metric == "deaths"){
+			if (chart_type == "cumulative"){
+				var chartdata_deaths = chart_data[2]
+				var chardata_type = "line";
+			} else if (chart_type == "daily"){
+				var chartdata_deaths = chart_data[4]
+				var chardata_type = "bar";
+			};
+		};
+		
+		county_chart = new Chart(chart_container, {
+			type: chardata_type,
 		    data: {
 		        labels: chart_data[0],
 		        datasets: [
-			        {
-			            label: 'Cases',
-			            data: chart_data[1],
-			            borderColor:"green",
-			            backgroundColor:"green"
+		        	{
+			     		// type: 'line',
+			            label: 'Reported Deaths',
+			            data: chartdata_deaths,
+			            yAxisID: 'deaths',
+			            borderColor:"orange",
+			            backgroundColor:"orange",
+			            fill: false
 			        },
-			     	{
-			            label: 'Deaths',
-			            data: chart_data[2],
-			            borderColor:"red",
-			            backgroundColor:"red"
-			        },
+			        {	
+			            label: 'Reported Cases',
+			            data: chartdata_cases,
+			            yAxisID: 'cases',
+			            borderColor:"forestgreen",
+			            backgroundColor:"forestgreen"
+			        }
 		        ]
 		    },
 		    options: {
 		        scales: {
 		            yAxes: [{
-		                ticks: {
-		                    beginAtZero: true
-		                }
-		            }]
+			            		id: 'cases',
+			            		position: 'right',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Cases',
+							        fontColor: "white"
+							    },
+							    gridLines: {
+							    	display:true,
+							    	color:"#595959",
+							    	lineWidth:0.5
+							    }
+		                	},
+		                	{
+			            		id: 'deaths',
+			            		position: 'left',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Deaths',
+							        fontColor: "white"
+							    }
+		               	}],
+               		xAxes: [{
+			            		id: 'date',
+			                	ticks: {
+			                		callback: function(label, index, labels) {
+			                			date_val = new Date(label.substring(0,4), label.substring(4,6) -1, label.substring(6,8))
+			                			date_val = format_date(date_val).substring(0,8)
+				                        return date_val;
+				                    },
+							        fontColor: "white"
+		                		},
+		                	}]
 		        },
 		        title: {
 		            display: true,
-		            text: county_data["NAMELSAD"] + ", " + county_data["STATEFP"]
+		            text: county_data["NAMELSAD"] + ", " + county_data["state_name"],
+		            fontSize: 24,
+		            fontColor: "white"
+		        },
+		        legend:{
+		        	labels:{
+		        		fontColor:"white"
+		        	}
 		        }
 		    }
 		});
@@ -314,11 +428,12 @@ $(document).ready(function($) {
 		var county_data = $selected_county_prop;
 
 		// create array to feed to chart
-		var chart_data = [[],[],[]]
+		var chart_data = [[],[],[],[],[]]
 		$.each(date_list, function(date_ind, date_val){
 
 			chart_data[0].push(date_val)
 
+			// cumulative
 			if (typeof(county_data["cases_" +date_val]) != "undefined"){
 				chart_data[1].push(county_data["cases_" + date_val])
 			} else{
@@ -329,6 +444,18 @@ $(document).ready(function($) {
 				chart_data[2].push(county_data["deaths_" + date_val])
 			} else{
 				chart_data[2].push(0)
+			};
+
+			// per day
+			if (typeof(county_data["casesPD_" +date_val]) != "undefined"){
+				chart_data[3].push(county_data["casesPD_" + date_val])
+			} else{
+				chart_data[3].push(0);
+			};
+			if (typeof(county_data["deathsPD_" + date_val]) != "undefined"){
+				chart_data[4].push(county_data["deathsPD_" + date_val])
+			} else{
+				chart_data[4].push(0)
 			};
 			
 		});

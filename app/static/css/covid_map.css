@@ -123,21 +123,28 @@ body{
 	color:white;
 	padding:5px;
 }
-#dataopt_title{
+.dataopt_title{
 	font-size: 24px;
 	border-bottom:1px solid white;
 	padding-bottom:5px;
+	text-align:center;
+	font-weight:bold;
 }
-
+.dataopt_spacer{
+	height:5px;
+}
 .rb_dataopt_box{
-	font-size: 21px;
+	font-size: 16px;
     padding-left: 10%;
-    line-height: 36px;
 }
 .rb_dataopt{
-	width:18px;
-	height:18px;
+	width:15px;
+	height:15px;
 	margin-right:10%;
+}
+.ci_options_box{
+	position:absolute;
+	width:50%;
 }
 
 /*legend*/
@@ -209,5 +216,8 @@ td.tooltip_data_val{
 	padding-right:5px;
 }
 #ci_close > i{
+	position: absolute;
+    right: 0.5%;
+    top: 1;
 	cursor:pointer;
 }
