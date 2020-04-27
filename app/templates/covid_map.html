@@ -1,5 +1,15 @@
 <html>
 	<head>
+		<!-- Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-40220685-1"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'UA-40220685-1');
+		</script>
+
 		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 		<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" />
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/covid_map.css') }}" />
@@ -23,7 +33,7 @@
 		<!-- top bar-->
 		<div id="top_bar" class="control_box">
 			<div id="btn_info" class="top_bar_section"><i class="fas fa-info-circle"></i></div>
-			<div id="page_title" class="top_bar_section">Covid19 US County Map</div>
+			<div id="page_title" class="top_bar_section">Covid-19 US County Map</div>
 			<div id="data_update" class="top_bar_section">Data Range: <span id="data_update_val"></span></div>
 			<div id="top_bar_spacer" class="top_bar_section"></div>
 		</div>
@@ -72,7 +82,7 @@
 
 				<!-- data type -->
 				<tr><td colspan="2" class="dataopt_spacer"></td></tr>
-				<tr><td colspan="2" class="dataopt_title">Data Type</td></tr>
+				<tr><td colspan="2" class="dataopt_title" id="dataopt_title_2">Data Type</td></tr>
 				<tr>
 					<td class="rb_dataopt_box">
 						<input id="dataopt_cumulative" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="cumulative" checked="checked">Cumulative</input>
@@ -90,6 +100,9 @@
 		<!-- legend -->
 		<table id="legend_box" class="control_box">
 			<thead>
+				<tr>
+					<th colspan="2" id="legend_data_metric"></th>
+				</tr>
 				<tr>
 					<th colspan="2" id="legend_data_type"></th>
 				</tr>
@@ -125,9 +138,10 @@
 						<input id="dataopt_deaths_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="deaths">Reported Deaths</input>
 					</th>
  -->
-					<th id="ci_options_box">
+					<th class="ci_options_box" id="ci_options_1">
 						<input id="dataopt_cumulative_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="cumulative" checked="checked">Cumulative</input>
-
+					</th>
+					<th class="ci_options_box" id="ci_options_2">
 						<input id="dataopt_daily_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="daily">Daily</input>
 					</th>
 
@@ -136,8 +150,8 @@
 			</thead>
 			<tbody id="county_info_body">
 				<tr>
-					<td colspan="2">
-						<canvas id="county_chart_container"></canvas>
+					<td colspan="3">
+						<canvas id="county_chart_container" height=125px></canvas>
 					</td>
 				</tr>
 			</tbody>

@@ -95,10 +95,7 @@ def run_process(get_data_flag):
 		saved_features = []
 		county_ctr = 0
 		for feature in geodata_county["features"]:	
-			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]:
-
-
-
+			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]: # exclude untracked statefps
 				feature["id"] = county_ctr
 				feature["properties"]["state_name"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_name"].values[0]
 				feature["properties"]["state_abbr"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_abbr"].values[0]
@@ -134,8 +131,6 @@ def run_process(get_data_flag):
 
 				saved_features.append(feature)
 				county_ctr+=1
-				# if feature["properties"]["NAMELSAD"] == "Cherry County":
-				# 	print(feature)
 
 		# removes shapes that arent displayed
 		geodata_county["features"] = saved_features

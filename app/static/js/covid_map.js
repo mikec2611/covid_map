@@ -15,6 +15,10 @@ $(document).ready(function($) {
 	   mouseY = e.pageY;
 	});  
 
+	console.log(date_list)
+	console.log(geodata_county)
+	console.log(geodata_state)
+
 	//cache commonly used elements
 	var $date_slider = $("#date_slider")
 	var $slider_info_box = $('#slider_info_box')
@@ -34,23 +38,13 @@ $(document).ready(function($) {
 		zoom: 4
 	});
 
-	console.log(date_list)
-	console.log(geodata_county)
-	console.log(geodata_state)
-
 	// get dates
 	var first_date = date_list[0]
 	var last_date = date_list[date_list.length - 1]
-
 	var first_date_sld = new Date(first_date.substring(0,4), first_date.substring(4,6) -1, first_date.substring(6,8))
 	var last_date_sld = new Date(last_date.substring(0,4), last_date.substring(4,6) -1, last_date.substring(6,8))
-	// var first_date_sld = first_date.substring(0,4) + "." + first_date.substring(4,6) + "." + first_date.substring(6,8)
-	// var last_date_sld = last_date.substring(0,4) + "." + last_date.substring(4,6) + "." + last_date.substring(6,8)
 	var first_date_format = format_date(first_date_sld)
 	var last_date_format = format_date(last_date_sld)
-	// var first_date_val = new Date(first_date_sld) / 1000
-	// var last_date_val = new Date(last_date_sld) / 1000
-	// console.log(first_date_format)
 
 	// populate dates on ui
 	$("#slider_min_box").text(first_date_format)
@@ -59,8 +53,7 @@ $(document).ready(function($) {
 
 	// load map
 	map.on('load', function() {
-		
-		// add data source
+		// add data sources
 		map.addSource('us_counties', {
 			'type': 'geojson',
 			'data': geodata_county
@@ -143,7 +136,9 @@ $(document).ready(function($) {
 		});
 
 		// start map
+		$('#dataopt_cases, #dataopt_cumulative, #dataopt_cumulative_chart').trigger('change');
 		update_map(last_date_sld / 1000);
+		$('.control_box').not('#county_info_box, #tooltip_box').show()
 	});
 
 	// create date slider
@@ -159,19 +154,33 @@ $(document).ready(function($) {
         }
     });
 
-    // events that update the map
+    // select new data metric/type for mapping
 	$("input.rb_dataopt").change(function(){
 		update_map($date_slider.slider("option","value"));
+
+		// color radiobutton choices
+		if ($(this).hasClass("rb_dataopt_metric")){
+			$("input.rb_dataopt_metric").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+		} else if ($(this).hasClass("rb_dataopt_type")){
+			$("input.rb_dataopt_type").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+		};
+		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 	});
 
 	// update the chart
 	$("input.rb_dataopt_chart").change(function(){
 		update_ci_chart();
+
+
+		$("input.rb_dataopt_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
+		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 	})
 
 	// close county info box
 	$('#ci_close > i').on('click', function(){
 		toggle_ci_box(false);
+		$selected_county = ""
+		$selected_county_prop = ""
 	});
 
 	// ---functions
@@ -231,7 +240,8 @@ $(document).ready(function($) {
 
 	// update legend
 	function update_legend(legend_stops){
-		$('#legend_data_type').text("Reported " + $("input.rb_dataopt_metric:checked").val())
+		$('#legend_data_metric').text("Reported " + $("input.rb_dataopt_metric:checked").val())
+		$('#legend_data_type').text("(" + $("input.rb_dataopt_type:checked").val() + ")")
 		$("tr.legend_row").remove()
 
 		// spacer row
@@ -358,6 +368,7 @@ $(document).ready(function($) {
 	        }]
 		};
 
+		// create chart
 		county_chart = new Chart(chart_container, {
 			type: chardata_type,
 		    data: {
