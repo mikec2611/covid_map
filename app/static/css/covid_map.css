@@ -321,6 +321,7 @@ td.ai_val{
 }
 #ai_github{
 	border-top:1px solid white;
+	padding-left:10px;
 }
 #ai_close{
 	text-align:right;
