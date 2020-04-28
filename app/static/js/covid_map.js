@@ -42,11 +42,13 @@ $(document).ready(function($) {
 	});
 
 	// show/hide app info
-	$('#btn_info > i').click(function(){
+	$('#btn_info').click(function(){
 		$('#app_info_box, #app_shader').show();
+		// $('').show();
 	});
 	$('#ai_close > i').click(function(){
 		$('#app_info_box, #app_shader').hide();
+		// $('#app_shader').hide();
 	});
 	// // populate county search
 	// var unique_county_list = [];

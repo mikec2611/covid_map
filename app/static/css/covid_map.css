@@ -328,3 +328,6 @@ td.ai_val{
 tr.ai_row{
 	/*border-bottom:1px solid gray;*/
 }
+a:visited{
+	color:orange;
+}
