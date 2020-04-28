@@ -23,6 +23,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.number.min.js') }}"></script>
 
 		<script type="text/javascript">
+			var unique_county = {{ unique_county|tojson }}
 			var geodata_county = {{ geodata_county|tojson }}
 			var geodata_state = {{ geodata_state|tojson }}
 			var date_list = {{ date_list|tojson }}
@@ -96,7 +97,6 @@
 			</tbody>
 		</table>
 
-
 		<!-- legend -->
 		<table id="legend_box" class="control_box">
 			<thead>
@@ -127,6 +127,17 @@
 			</tbody>
 		</table>
 
+ 		<!-- county search box-->
+<!--		<table id="county_search_box" class="control_box">
+			<tbody>
+				<tr>
+					<td id="cs_label">Search for county:</td>
+					<td id="cs_input_box">
+						<input id="cs_input" name="cs_input" type="text"></td>
+					</td>
+				</tr>
+			</tbody>
+		</table> -->
 
 		<!-- county info box -->
 		<table id="county_info_box" class="control_box">

@@ -5,16 +5,14 @@ var $active_county_prop = "";
 var $selected_county = "";
 var $selected_county_prop = "";
 var county_chart;
+var unique_county_list;
 
 var chartcolor_1 = "orange"
 var chartcolor_2 = "forestgreen"
 
-$(document).ready(function($) {
-	$(document).mousemove( function(e) {
-	   mouseX = e.pageX; 
-	   mouseY = e.pageY;
-	});  
 
+$(document).ready(function($) {
+	console.log(unique_county)
 	console.log(date_list)
 	console.log(geodata_county)
 	console.log(geodata_state)
@@ -29,15 +27,6 @@ $(document).ready(function($) {
 	var $county_info_box = $('#county_info_box')
 	var $county_info_body = $('#county_info_body')
 
-	// create map
-	mapboxgl.accessToken = "pk.eyJ1IjoibWMyNjExIiwiYSI6ImNrOHB6ZWhubDAwMTYza3FnNXZ6bHVpMXAifQ.DlTZdXEIIELPGf0oZmGSPA";
-	var map = new mapboxgl.Map({
-		container: 'map', // container id
-		style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
-		center: [-95, 38],
-		zoom: 4
-	});
-
 	// get dates
 	var first_date = date_list[0]
 	var last_date = date_list[date_list.length - 1]
@@ -46,10 +35,38 @@ $(document).ready(function($) {
 	var first_date_format = format_date(first_date_sld)
 	var last_date_format = format_date(last_date_sld)
 
+	// track mouse movement
+	$(document).mousemove( function(e) {
+	   mouseX = e.pageX; 
+	   mouseY = e.pageY;
+	});
+
+	// populate county search
+	var unique_county_list = [];
+	var num_counties = unique_county.length
+	$.each(unique_county, function(county_ind, county_rec){
+		unique_county_list.push(county_rec[1]);
+		if (county_ind+1 == num_counties){
+			// console.log(typeof (unique_county_list.values()))
+			$('#cs_input').autocomplete({
+				source: unique_county_list
+			});
+		};
+	});
+
 	// populate dates on ui
 	$("#slider_min_box").text(first_date_format)
 	$("#slider_max_box").text(last_date_format)
 	$("#data_update_val").text(first_date_format.replace(/-/g, ".") + " - " + last_date_format.replace(/-/g, "."))
+
+	// create map
+	mapboxgl.accessToken = "pk.eyJ1IjoibWMyNjExIiwiYSI6ImNrOHB6ZWhubDAwMTYza3FnNXZ6bHVpMXAifQ.DlTZdXEIIELPGf0oZmGSPA";
+	var map = new mapboxgl.Map({
+		container: 'map', // container id
+		style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
+		center: [-95, 38],
+		zoom: 4
+	});
 
 	// load map
 	map.on('load', function() {
@@ -170,8 +187,6 @@ $(document).ready(function($) {
 	// update the chart
 	$("input.rb_dataopt_chart").change(function(){
 		update_ci_chart();
-
-
 		$("input.rb_dataopt_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
 		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 	})

@@ -15,6 +15,7 @@ app_rel_path = "C:/programming/covid_map"
 # app_rel_path = "/home/mc2615/covid_map"
 
 def get_data_covid():
+	debug_msg("run get_data_covid")
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
 						    dtype={'fips': 'str'}
 							)
@@ -33,6 +34,8 @@ def get_data_covid():
 	return df_county
 
 def get_data_geo():
+	debug_msg("run get_data_geo")
+
 	# counties
 	geojson_file = app_rel_path + '/app/static/data/us_county.json'
 	with open(geojson_file) as county_geojson:
@@ -46,6 +49,8 @@ def get_data_geo():
 	return(geodata_county, geodata_state)
 
 def get_data_pop():
+	debug_msg("run get_data_pop")
+
 	data_pop_path = app_rel_path +'/app/static/data/pop-by-zip-code.csv'
 	data_pop = pd.read_csv(data_pop_path, dtype={'zip_code': 'str'})
 	data_pop = data_pop.sort_values(by=['zip_code'])
@@ -54,6 +59,8 @@ def get_data_pop():
 	return data_pop
 
 def get_data():
+	debug_msg("run get_data")
+
 	data_county = get_data_covid()
 	geodata_county, geodata_state = get_data_geo()
 	# data_pop = get_data_pop()
@@ -61,12 +68,15 @@ def get_data():
 
 # run full process
 def run_process(get_data_flag):
+	debug_msg("run run_process")
+
 	county_path = app_rel_path + '/app/static/data/data_county.csv'
+	unique_county_path = app_rel_path + '/app/static/data/unique_county.csv'
 	geodata_county_path = app_rel_path + '/app/static/data/geodata_county.json'
 	geodata_state_path = app_rel_path + '/app/static/data/geodata_state.json'
 
 	if get_data_flag == True:
-		debug_msg("Loading New Data")
+		debug_msg("loading new data")
 		# data_county, geodata_county, data_pop = get_data()
 		data_county, geodata_county, geodata_state = get_data()
 
@@ -74,6 +84,7 @@ def run_process(get_data_flag):
 		date_list = data_county["date_id"].unique().tolist()
 
 		# get state lookups and remove unmapped shapes in statefile
+		debug_msg("getting state information")
 		unique_state = []
 		state_names = []
 		saved_features = []
@@ -91,17 +102,30 @@ def run_process(get_data_flag):
 
 		geodata_state["features"] = saved_features
 
+
 		# add properties to each county geojson with covid data
+		debug_msg("populating features")
+		curr_county = ""
+		unique_counties = []
 		saved_features = []
 		county_ctr = 0
 		for feature in geodata_county["features"]:	
 			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]: # exclude untracked statefps
+
+				# set values in feature
 				feature["id"] = county_ctr
 				feature["properties"]["state_name"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_name"].values[0]
 				feature["properties"]["state_abbr"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_abbr"].values[0]
+
+				# get unique list of counties for frontend
+				full_county_name = feature["properties"]["NAMELSAD"] + ", " + feature["properties"]["state_abbr"]
+				if full_county_name != curr_county: # get unique list of counties
+					unique_counties.append([full_county_name, feature["properties"]["NAMELSAD"], feature["properties"]["state_abbr"]])
+					curr_county = full_county_name
+
+				# populate data in feature
 				geo_county_fips = feature["properties"]["GEOID"]
 				fips_data = data_county.loc[data_county["fips"] == geo_county_fips]
-
 				if not fips_data.empty:
 					prior_cases = 0
 					prior_deaths = 0
@@ -131,12 +155,16 @@ def run_process(get_data_flag):
 
 				saved_features.append(feature)
 				county_ctr+=1
+		geodata_county["features"] = saved_features # removes shapes that arent displayed
+		# sort unique counties
+		unique_counties = pd.DataFrame(unique_counties, columns=["full_county_name","county_name","county_state"])
+		unique_counties = unique_counties.sort_values(["county_state", "county_name"], ascending = (True, True))
+		unique_counties = unique_counties["full_county_name"]
 
-		# removes shapes that arent displayed
-		geodata_county["features"] = saved_features
-
+		debug_msg("saving data")
 		# save data
 		data_county.to_csv(county_path)
+		unique_counties.to_csv(unique_county_path, header=True)
 
 		# save county shapes
 		with open(geodata_county_path, 'w') as f:
@@ -146,14 +174,15 @@ def run_process(get_data_flag):
 		with open(geodata_state_path, 'w') as f:
 			dump(geodata_state, f)		
 
-		return data_county, geodata_county, geodata_state, date_list
+		return geodata_county, geodata_state, date_list, unique_counties
 	else:
-		debug_msg("Loading Locally")
+		debug_msg("loading locally")
 
 		# load data
 		data_county = pd.read_csv(county_path)
 		date_list = data_county["date_id"].astype(str).unique().tolist()
-		# print(date_list)
+		unique_counties = pd.read_csv(unique_county_path)
+		unique_counties = unique_counties.values.tolist()
 
 		# load county shapes
 		with open(geodata_county_path) as f:
@@ -163,7 +192,7 @@ def run_process(get_data_flag):
 		with open(geodata_state_path) as f:
 			geodata_state = json.load(f)
 
-		return data_county, geodata_county, geodata_state, date_list
+		return geodata_county, geodata_state, date_list, unique_counties
 
 
 def debug_msg(msg):

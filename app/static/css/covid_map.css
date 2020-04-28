@@ -205,6 +205,23 @@ td.tooltip_data_val{
 	padding-right:5px;
 }
 
+/*county search*/
+/*#county_search_box{
+	position:absolute;
+	top:50px;
+	right:1.5%;
+	width:20%;
+	height:35px;
+	z-index:1100;
+	table-layout:fixed;
+}
+#cs_label{
+	width:40%;
+	color:white;
+}
+#cs_input_box{
+	width:60%;
+}*/
 
 /* county info box*/
 #county_info_box{
