@@ -141,10 +141,12 @@ body{
     padding-left: 5%;
 }
 .rb_dataopt{
-	width:20px;
-	height:20px;
+	width:15px;
+	height:15px;
 	margin-right: 5%;
 	cursor:pointer;
+	position:relative;
+	top:3px;
 }
 
 /*legend*/
@@ -196,6 +198,9 @@ td.legend_swatch{
 }
 #tooltip_header{
 	text-align:center;
+}
+#tooltip_header_type, #tooltip_header_date{
+	font-size:13px;
 }
 td.tooltip_data_label{
 	text-indent:5px;
@@ -250,10 +255,11 @@ td.tooltip_data_val{
 	color:orange;
 }
 .rb_dataopt_chart{
-	width:20px;
-	height:20px;
+	width:15px;
+	height:15px;
 	margin-right:5%;
 	cursor:pointer;
+	position:relative;
 }
 .ci_options_box{
 	position:absolute;
@@ -261,7 +267,7 @@ td.tooltip_data_val{
 	padding-left: 5px;
     padding-top: 15px;
     text-align: left;
-    font-size: 16px
+    font-size: 14px
 }
 #ci_options_2{
 	left:15%;

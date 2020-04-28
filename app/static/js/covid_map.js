@@ -10,12 +10,11 @@ var unique_county_list;
 var chartcolor_1 = "orange"
 var chartcolor_2 = "forestgreen"
 
-
 $(document).ready(function($) {
-	console.log(unique_county)
-	console.log(date_list)
-	console.log(geodata_county)
-	console.log(geodata_state)
+	// console.log(unique_county)
+	// console.log(date_list)
+	// console.log(geodata_county)
+	// console.log(geodata_state)
 
 	//cache commonly used elements
 	var $date_slider = $("#date_slider")
@@ -220,7 +219,7 @@ $(document).ready(function($) {
 		} else if (curr_datatype_type == "cumulative"){
 			var curr_lookup = curr_datatype_metric + "_" + curr_date_id.replace(/-/g, "");
 		};
-		var legend_stops = calc_legend_stops(curr_datatype_metric)
+		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type)
 
 		map.setPaintProperty('us_counties', 'fill-color', {
 			property: curr_lookup,
@@ -235,28 +234,43 @@ $(document).ready(function($) {
 	};
 
 	// calculate which legend stops to use
-	function calc_legend_stops(curr_datatype_metric){
-		if (curr_datatype_metric == "cases"){
-			legend_stops = [
-				[0, 'darkgray'],
-				[10, 'green'],
-				[100, 'yellow'],
-				[1000, 'darkorange'],
-				[10000, 'red']
-			];
-		} else if (curr_datatype_metric == "deaths") {
-			legend_stops = [
-				[0, 'darkgray'],
-				[1, 'green'],
-				[10, 'yellow'],
-				[100, 'darkorange'],
-				[1000, 'red']
-			];
-		} else {
-			legend_stops = [
-				[0, 'gray'],
-				[100, 'orange']
-			];
+	function calc_legend_stops(curr_datatype_metric, curr_datatype_type){
+		if (curr_datatype_type == "cumulative"){
+			if (curr_datatype_metric == "cases"){
+				legend_stops = [
+					[0, 'darkgray'],
+					[10, 'green'],
+					[100, 'yellow'],
+					[1000, 'darkorange'],
+					[10000, 'red']
+				];
+			} else if (curr_datatype_metric == "deaths") {
+				legend_stops = [
+					[0, 'darkgray'],
+					[1, 'green'],
+					[10, 'yellow'],
+					[100, 'darkorange'],
+					[1000, 'red']
+				];
+			}
+		} else if (curr_datatype_type == "daily"){
+			if (curr_datatype_metric == "cases"){
+				legend_stops = [
+					[0, 'darkgray'],
+					[1, 'green'],
+					[10, 'yellow'],
+					[100, 'darkorange'],
+					[1000, 'red']
+				];
+			} else if (curr_datatype_metric == "deaths") {
+				legend_stops = [
+					[0, 'darkgray'],
+					[1, 'green'],
+					[5, 'yellow'],
+					[10, 'darkorange'],
+					[100, 'red']
+				];
+			}
 		}
 
 		return legend_stops;
@@ -305,14 +319,25 @@ $(document).ready(function($) {
 		var selected_date = $date_slider.slider("option","value")
 		var curr_date = new Date(selected_date * 1000)
 		var curr_date_id = curr_date.toISOString().split('T')[0].replace(/-/g, "")
+		var curr_datatype_metric = $("input.rb_dataopt_metric:checked").val();
+		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
 		var county_data = $active_county_prop;
 
-		// update header
+		// get data based on selections
+		if (curr_datatype_type == "daily"){
+			var type_lookup = "PD_";
+			$('#tooltip_header_type').text("Daily Metrics: ")
+		} else if (curr_datatype_type == "cumulative"){
+			var type_lookup = "_";
+			$('#tooltip_header_type').text("Cumulative Metrics: ")
+		};
+
+		// update headers
 		$('#tooltip_header_name').text(county_data["NAMELSAD"] + ", " + county_data["state_abbr"])
 		$('#tooltip_header_date').text(format_date(curr_date))
 
 		// create row for each displayed prop
-		var displayed_properties = ["cases_" + curr_date_id, "deaths_" + curr_date_id]
+		var displayed_properties = ["cases" + type_lookup + curr_date_id, "deaths" + type_lookup + curr_date_id]
 		var label_display = [" Reported Cases", "Reported Deaths"]
 		$("tr.tooltip_data_row").remove()
 		$.each(displayed_properties, function(prop_ind, prop) {
