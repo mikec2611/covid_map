@@ -31,6 +31,9 @@
 
 	</head>
 	<body>
+		<!-- app shader-->
+		<div id="app_shader"></div>
+
 		<!-- top bar-->
 		<div id="top_bar" class="control_box">
 			<div id="btn_info" class="top_bar_section"><i class="fas fa-info-circle"></i></div>
@@ -38,6 +41,54 @@
 			<div id="data_update" class="top_bar_section">Data Range: <span id="data_update_val"></span></div>
 			<div id="top_bar_spacer" class="top_bar_section"></div>
 		</div>
+
+		<!-- sources/tech/etc info box -->
+		<table id="app_info_box" class="control_box">
+			<thead>
+				<tr>
+					<th colspan="3" id="ai_version" class="ai_header1"> Version 1.0</th>
+					<th id="ai_close" class="ai_header1"><i class="far fa-window-close"></i></th>
+				</tr>
+				<tr>
+					<th colspan="2" class="ai_midborder ai_header2">Sources</th>
+					<th colspan="2" class="ai_header2">Tech</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="ai_row">
+					<td class="ai_label">Covid-19 Data:</td>
+					<td class="ai_val ai_midborder">New York Times (<a target="_blank" href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html">Link</a>)</td>
+
+					<td class="ai_label">Framework:</td>
+					<td class="ai_val">Flask</td>
+				</tr>
+				<tr class="ai_row">
+					<td class="ai_label">Shapefiles:</td>
+					<td class="ai_val ai_midborder">US Census Bureau</td>
+
+					<td class="ai_label">Front-end:</td>
+					<td class="ai_val">HTML, CSS, JavaScript, jQuery</td>
+				</tr>
+				<tr class="ai_row">
+					<td class="ai_label">Population Data:</td>
+					<td class="ai_val ai_midborder">US Census Bureau</td>
+
+					<td class="ai_label">Python Packages & Libraries:</td>
+					<td class="ai_val">pandas, json, geojson, flask</td>
+				</tr>
+				<tr class="ai_row">
+					<td class="ai_label"></td>
+					<td class="ai_val ai_midborder"></td>
+
+					<td class="ai_label">JavaScript Libraries:</td>
+					<td class="ai_val">jQuery, jquery-number, MapBox, Chart.js, Font Awesome</td>
+				</tr>
+
+				<tr>
+					<td colspan="4" id="ai_github">Github Link: Link</td>
+				</tr>
+			</tbody>
+		</table>
 
 		<!-- map -->
 		<div id="map"></div>

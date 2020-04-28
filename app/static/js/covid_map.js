@@ -41,18 +41,25 @@ $(document).ready(function($) {
 	   mouseY = e.pageY;
 	});
 
-	// populate county search
-	var unique_county_list = [];
-	var num_counties = unique_county.length
-	$.each(unique_county, function(county_ind, county_rec){
-		unique_county_list.push(county_rec[1]);
-		if (county_ind+1 == num_counties){
-			// console.log(typeof (unique_county_list.values()))
-			$('#cs_input').autocomplete({
-				source: unique_county_list
-			});
-		};
+	// show/hide app info
+	$('#btn_info > i').click(function(){
+		$('#app_info_box, #app_shader').show();
 	});
+	$('#ai_close > i').click(function(){
+		$('#app_info_box, #app_shader').hide();
+	});
+	// // populate county search
+	// var unique_county_list = [];
+	// var num_counties = unique_county.length
+	// $.each(unique_county, function(county_ind, county_rec){
+	// 	unique_county_list.push(county_rec[1]);
+	// 	if (county_ind+1 == num_counties){
+	// 		// console.log(typeof (unique_county_list.values()))
+	// 		$('#cs_input').autocomplete({
+	// 			source: unique_county_list
+	// 		});
+	// 	};
+	// });
 
 	// populate dates on ui
 	$("#slider_min_box").text(first_date_format)
@@ -155,7 +162,7 @@ $(document).ready(function($) {
 		// start map
 		$('#dataopt_cases, #dataopt_cumulative, #dataopt_cumulative_chart').trigger('change');
 		update_map(last_date_sld / 1000);
-		$('.control_box').not('#county_info_box, #tooltip_box').show()
+		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
 	});
 
 	// create date slider

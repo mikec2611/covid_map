@@ -266,3 +266,65 @@ td.tooltip_data_val{
 #ci_options_2{
 	left:15%;
 }
+
+/*app info box*/
+#app_shader{
+	position:absolute;
+	background-color:black;
+	opacity:65%;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	z-index:1150;
+	display:none;
+}
+#app_info_box{
+	position: absolute;
+    height: 30%;
+    top: 30%;
+    width: 40%;
+    /* min-width: 455px; */
+    left: 30%;
+    z-index: 1200;
+    color: white;
+    table-layout: fixed;
+    border: 1px solid white;
+    border-collapse: collapse;
+    display: none; 
+}
+#ai_version{
+	text-align:left;
+	text-indent:5px;
+}
+td.ai_label{
+	padding-left:10px;
+}
+td.ai_val{
+	font-style:italic;
+	padding-left:10px;
+}
+.ai_midborder{
+	border-right:1px solid white;
+}
+.ai_header2{
+	border-bottom:1px solid white;
+	border-top:1px solid white;
+	text-align:center;
+	font-size:20px;
+}
+#ai_github{
+	border-top:1px solid white;
+}
+#ai_close{
+	text-align:right;
+	padding-top:1px;
+	padding-right:5px;
+}
+#ai_close > i:hover{
+	color:orange;
+	cursor:pointer;
+}
+tr.ai_row{
+	/*border-bottom:1px solid gray;*/
+}

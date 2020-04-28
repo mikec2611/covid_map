@@ -6,11 +6,6 @@ import os
 from geojson import dump, FeatureCollection
 import time
 
-# data sources
-# covid - NYT (github)
-# shapefiles - https://catalog.data.gov/dataset/tiger-line-shapefile-2017-nation-u-s-current-county-and-equivalent-national-shapefile
-# county population - data.world in progress
-
 app_rel_path = "C:/programming/covid_map"
 # app_rel_path = "/home/mc2615/covid_map"
 
