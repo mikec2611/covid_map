@@ -46,47 +46,22 @@
 		<table id="app_info_box" class="control_box">
 			<thead>
 				<tr>
-					<th colspan="3" id="ai_version" class="ai_header1"> Version 1.0</th>
+					<th id="ai_version" class="ai_header1"> Version 1.0</th>
 					<th id="ai_close" class="ai_header1"><i class="far fa-window-close"></i></th>
 				</tr>
 				<tr>
-					<th colspan="2" class="ai_midborder ai_header2">Sources</th>
-					<th colspan="2" class="ai_header2">Technology</th>
+					<th colspan="2" class="ai_header2">Sources</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr class="ai_row">
 					<td class="ai_label">Covid-19 Data:</td>
-					<td class="ai_val ai_midborder">The New York Times, based on reports from state and local health agencies. (<a target="_blank" href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html">Link</a>)</td>
-
-					<td class="ai_label">Framework:</td>
-					<td class="ai_val">Flask</td>
+					<td class="ai_val">The New York Times, based on reports from state and local health agencies. (<a target="_blank" href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html">Link</a>)</td>
 				</tr>
 				<tr class="ai_row">
 					<td class="ai_label">Shapefiles:</td>
-					<td class="ai_val ai_midborder">US Census Bureau</td>
-
-					<td class="ai_label">Front-end:</td>
-					<td class="ai_val">HTML, CSS, JavaScript, jQuery</td>
+					<td class="ai_val">US Census Bureau</td>
 				</tr>
-				<tr class="ai_row">
-					<td class="ai_label"></td>
-					<td class="ai_val ai_midborder"></td>
-
-					<td class="ai_label">Python Packages & Libraries:</td>
-					<td class="ai_val">pandas, json, geojson, flask</td>
-				</tr>
-				<tr class="ai_row">
-					<td class="ai_label"></td>
-					<td class="ai_val ai_midborder"></td>
-
-					<td class="ai_label">JavaScript Libraries:</td>
-					<td class="ai_val">jQuery, jquery-number, MapBox, Chart.js, Font Awesome</td>
-				</tr>
-
-				<!-- <td class="ai_label">Population Data:</td>
-					<td class="ai_val ai_midborder">US Census Bureau</td> -->
-
 			</tbody>
 		</table>
 
@@ -138,7 +113,7 @@
 				<tr><td colspan="2" class="dataopt_title" id="dataopt_title_2">Data Type</td></tr>
 				<tr>
 					<td class="rb_dataopt_box">
-						<input id="dataopt_cumulative" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="cumulative" checked="checked">Cumulative</input>
+						<input id="dataopt_current" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="current" checked="checked">Current</input>
 					</td>
 				</tr>
 				<tr>
@@ -202,7 +177,7 @@
 					</th>
  -->
 					<th class="ci_options_box" id="ci_options_1">
-						<input id="dataopt_cumulative_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="cumulative" checked="checked">Cumulative</input>
+						<input id="dataopt_current_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="current" checked="checked">Current</input>
 					</th>
 					<th class="ci_options_box" id="ci_options_2">
 						<input id="dataopt_daily_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="daily">Daily</input>

@@ -161,7 +161,7 @@ $(document).ready(function($) {
 		});
 
 		// start map
-		$('#dataopt_cases, #dataopt_cumulative, #dataopt_cumulative_chart').trigger('change');
+		$('#dataopt_cases, #dataopt_current, #dataopt_current_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
 	});
@@ -171,7 +171,7 @@ $(document).ready(function($) {
     $date_slider.slider({
         range: false,
         min: first_date_sld / 1000,
-        max: (last_date_sld / 1000)  + 86400,
+        max: (last_date_sld / 1000)  ,//+ 86400,
         step: 86400,
         value: last_date_sld / 1000,
         slide: function(event, ui) {
@@ -216,7 +216,7 @@ $(document).ready(function($) {
 		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
 		if (curr_datatype_type == "daily"){
 			var curr_lookup = curr_datatype_metric + "PD_" + curr_date_id.replace(/-/g, "")	;
-		} else if (curr_datatype_type == "cumulative"){
+		} else if (curr_datatype_type == "current"){
 			var curr_lookup = curr_datatype_metric + "_" + curr_date_id.replace(/-/g, "");
 		};
 		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type)
@@ -235,7 +235,7 @@ $(document).ready(function($) {
 
 	// calculate which legend stops to use
 	function calc_legend_stops(curr_datatype_metric, curr_datatype_type){
-		if (curr_datatype_type == "cumulative"){
+		if (curr_datatype_type == "current"){
 			if (curr_datatype_metric == "cases"){
 				legend_stops = [
 					[0, 'darkgray'],
@@ -327,9 +327,9 @@ $(document).ready(function($) {
 		if (curr_datatype_type == "daily"){
 			var type_lookup = "PD_";
 			$('#tooltip_header_type').text("Daily Metrics: ")
-		} else if (curr_datatype_type == "cumulative"){
+		} else if (curr_datatype_type == "current"){
 			var type_lookup = "_";
-			$('#tooltip_header_type').text("Cumulative Metrics: ")
+			$('#tooltip_header_type').text("Current Metrics: ")
 		};
 
 		// update headers
@@ -379,7 +379,7 @@ $(document).ready(function($) {
 
 		// var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
 		var chart_type = $("input.rb_dataopt_type_chart:checked").val();
-		if (chart_type == "cumulative"){
+		if (chart_type == "current"){
 			var chardata_type = "line";
 			chartdata = [{	
 				type: chardata_type,
@@ -484,7 +484,10 @@ $(document).ready(function($) {
 		        legend:{
 		        	labels:{
 		        		fontColor:"white"
-		        	}
+		        	},
+		        	onHover: (event, chartElement) => {
+				    	event.target.style.cursor = 'pointer'
+					}
 		        },
 		        tooltips:{
 	        		callbacks: {
@@ -515,7 +518,10 @@ $(document).ready(function($) {
 		                    return colors
 		                },
                     },
-		        }
+		        },
+		        onHover: (event, chartElement) => {
+				   	event.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+				}
 		    }
 		});
 	};
@@ -529,7 +535,7 @@ $(document).ready(function($) {
 
 			chart_data[0].push(date_val)
 
-			// cumulative
+			// current
 			if (typeof(county_data["cases_" +date_val]) != "undefined"){
 				chart_data[1].push(county_data["cases_" + date_val])
 			} else{

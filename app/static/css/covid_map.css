@@ -79,7 +79,7 @@ body{
 /*date slider box*/
 #slider_container{
     position: absolute;
-    bottom: 30;
+    bottom: 2.5%;
     width: 50%;
     left: 1.5%;
     height: 100px;
@@ -119,7 +119,7 @@ body{
 	z-index:1100;
 	min-width: 225px;
 	left:1.5%;
-	top:20%;
+	top: 62.5%;
 	color:white;
 	padding:5px;
 }
@@ -155,7 +155,7 @@ body{
 	z-index:1100;
 	width:225px;
 	left:1.5%;
-	top:50%;
+	top: 37.5%;
 	color:white;
 	padding:5px;
 	display:none;
@@ -231,8 +231,8 @@ td.tooltip_data_val{
 /* county info box*/
 #county_info_box{
     position: absolute;
-    bottom: 30;
-    width: 44.5%;
+    bottom: 2.5%;
+    width: 46.5%;
     height:20%;
     right: 1.5%;
     color:white;
@@ -288,10 +288,10 @@ td.tooltip_data_val{
 #app_info_box{
 	position: absolute;
     height: 30%;
-    top: 30%;
-    width: 40%;
+    top: 20%;
+    width: 20%;
     /* min-width: 455px; */
-    left: 30%;
+    left: 40%;
     z-index: 1200;
     color: white;
     table-layout: fixed;
@@ -309,9 +309,6 @@ td.ai_label{
 td.ai_val{
 	font-style:italic;
 	padding-left:10px;
-}
-.ai_midborder{
-	border-right:1px solid white;
 }
 .ai_header2{
 	border-bottom:1px solid white;

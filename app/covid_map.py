@@ -18,7 +18,7 @@ def get_data_covid():
 	df_county.columns = ["date","county","state","fips","cases","deaths"]
 	df_county["date_id"] = df_county["date"].str.replace('-','')
 
-	df_county = df_county.loc[df_county["date_id"].astype(int) >= 20200301]
+	df_county = df_county.loc[df_county["date_id"].astype(int) >= 20200315]
 	df_county = df_county.loc[df_county["fips"].notnull()]
 
 	# NYC = 10001
