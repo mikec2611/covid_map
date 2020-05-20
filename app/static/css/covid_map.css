@@ -263,14 +263,17 @@ td.tooltip_data_val{
 }
 .ci_options_box{
 	position:absolute;
-	width: 15%;
+	width: 20%;
 	padding-left: 5px;
     padding-top: 15px;
     text-align: left;
     font-size: 16px
 }
+#ci_options_1{
+	top: -5px;
+}
 #ci_options_2{
-	left:10%;
+	top: 25px;
 }
 
 /*app info box*/

@@ -279,7 +279,12 @@ $(document).ready(function($) {
 	// update legend
 	function update_legend(legend_stops){
 		$('#legend_data_metric').text("Reported " + $("input.rb_dataopt_metric:checked").val())
-		$('#legend_data_type').text("(" + $("input.rb_dataopt_type:checked").val() + ")")
+		if ($("input.rb_dataopt_type:checked").val() == "daily"){
+			$('#legend_data_type').text("(Daily Count)")
+		} else{
+			$('#legend_data_type').text("(Current Count)")
+		}
+		
 		$("tr.legend_row").remove()
 
 		// spacer row
