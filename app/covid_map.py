@@ -24,9 +24,13 @@ def get_data_covid():
 	# NYC = 10001
 	# KS MO = 64101
 
-	# df_state = pd.read_csv('https://raw.github.com/nytimes/covid-19-data//master/us-states.csv')
-	
-	return df_county
+	df_state = pd.read_csv('https://raw.github.com/nytimes/covid-19-data//master/us-states.csv',
+						    dtype={'fips': 'str'}
+						  )
+
+	df_total = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us.csv')
+
+	return df_total, df_state, df_county
 
 def get_data_geo():
 	debug_msg("run get_data_geo")
@@ -41,7 +45,7 @@ def get_data_geo():
 	with open(geojson_file) as state_geojson:
 		geodata_state = json.load(state_geojson)
 
-	return(geodata_county, geodata_state)
+	return(geodata_state, geodata_county)
 
 def get_data_pop():
 	debug_msg("run get_data_pop")
@@ -56,15 +60,18 @@ def get_data_pop():
 def get_data():
 	debug_msg("run get_data")
 
-	data_county = get_data_covid()
-	geodata_county, geodata_state = get_data_geo()
+	df_total, df_state, df_county  = get_data_covid()
+	geodata_state, geodata_county = get_data_geo()
 	# data_pop = get_data_pop()
-	return data_county, geodata_county, geodata_state #, data_pop
+
+	return df_total, df_state, df_county, geodata_state, geodata_county #, data_pop
+
 
 # run full process
 def run_process(get_data_flag):
 	debug_msg("run run_process")
 
+	total_path = app_rel_path + '/app/static/data/data_total.csv'
 	county_path = app_rel_path + '/app/static/data/data_county.csv'
 	unique_county_path = app_rel_path + '/app/static/data/unique_county.csv'
 	geodata_county_path = app_rel_path + '/app/static/data/geodata_county.json'
@@ -73,11 +80,12 @@ def run_process(get_data_flag):
 	if get_data_flag == True:
 		debug_msg("loading new data")
 		# data_county, geodata_county, data_pop = get_data()
-		data_county, geodata_county, geodata_state = get_data()
+		data_total, df_state, data_county, geodata_state, geodata_county = get_data()
 
 		# get list of dates in data
 		date_list = data_county["date_id"].unique().tolist()
 
+		#MCDEV
 		# get state lookups and remove unmapped shapes in statefile
 		debug_msg("getting state information")
 		unique_state = []
@@ -159,6 +167,7 @@ def run_process(get_data_flag):
 		debug_msg("saving data")
 		# save data
 		data_county.to_csv(county_path)
+		data_total.to_csv(total_path)
 		unique_counties.to_csv(unique_county_path, header=True)
 
 		# save county shapes
@@ -167,13 +176,20 @@ def run_process(get_data_flag):
 
 		# save state shapes
 		with open(geodata_state_path, 'w') as f:
-			dump(geodata_state, f)		
+			dump(geodata_state, f)
 
-		return geodata_county, geodata_state, date_list, unique_counties
+		# prep total data
+		data_total = data_total.to_dict('records')
+
+		return geodata_county, geodata_state, date_list, unique_counties, data_total
 	else:
 		debug_msg("loading locally")
 
-		# load data
+		# load total data
+		data_total = pd.read_csv(total_path)
+		data_total = data_total.to_dict('records')
+
+		# load county data
 		data_county = pd.read_csv(county_path)
 		date_list = data_county["date_id"].astype(str).unique().tolist()
 		unique_counties = pd.read_csv(unique_county_path)
@@ -187,7 +203,7 @@ def run_process(get_data_flag):
 		with open(geodata_state_path) as f:
 			geodata_state = json.load(f)
 
-		return geodata_county, geodata_state, date_list, unique_counties
+		return geodata_county, geodata_state, date_list, unique_counties, data_total
 
 
 def debug_msg(msg):

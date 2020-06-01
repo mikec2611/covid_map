@@ -31,6 +31,7 @@
 			var geodata_county = {{ geodata_county|tojson }}
 			var geodata_state = {{ geodata_state|tojson }}
 			var date_list = {{ date_list|tojson }}
+			var data_total = {{ data_total|tojson }}
 		</script>
 
 	</head>
@@ -95,7 +96,7 @@
 
 			<tbody>
 				<tr>
-					<td class="dataopt_title" colspan="2">Metric</ts>
+					<td class="dataopt_title" colspan="2">Metric</td>
 				</tr>
 				<tr>
 					<td class="rb_dataopt_box">
@@ -146,6 +147,9 @@
 		<!-- date slider control box -->
 		<table id="slider_container" class="control_box">
 			<tbody>
+				<tr>
+					<td id='slider_title' class="dataopt_title" colspan="3">Date</td>
+				</tr>
 				<tr>
 					<td id='slider_min_box' class="slider_val_box"></td>
 					<td id='slider_info_box'></td>

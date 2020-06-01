@@ -7,6 +7,12 @@ import json
 
 @app.route('/')
 def covid_map():
-	geodata_county, geodata_state, date_list, unique_county = cm.run_process(get_data_flag=False)
+	geodata_county, geodata_state, date_list, unique_county, data_total = cm.run_process(get_data_flag=False)
 	
-	return render_template('covid_map.html', date_list=date_list, geodata_county=geodata_county, geodata_state=geodata_state, unique_county=unique_county)
+	return render_template('covid_map.html',
+						   date_list=date_list,
+						   geodata_county=geodata_county,
+						   geodata_state=geodata_state,
+						   unique_county=unique_county,
+						   data_total=data_total
+						  )
