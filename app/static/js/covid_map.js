@@ -161,7 +161,7 @@ $(document).ready(function($) {
 		});
 
 		// start map
-		$('#dataopt_cases, #dataopt_current, #dataopt_current_chart').trigger('change');
+		$('#dataopt_cases, #dataopt_current, #dataopt_current_chart, #dataopt_cases_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
 	});
@@ -193,10 +193,15 @@ $(document).ready(function($) {
 	});
 
 	// update the chart
-	$("input.rb_dataopt_chart").change(function(){
+	$("input.rb_dataopt_type_chart").change(function(){
 		update_ci_chart();
-		$("input.rb_dataopt_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
+		$("input.rb_dataopt_type_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
 		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
+	})
+	$("input.rb_dataopt_metric_chart").change(function(){
+		update_ci_chart();
+		$("input.rb_dataopt_metric_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
+		$(this).parent().css({'color': 'greenyellow', 'font-weight': 'bold'});
 	})
 
 	// close county info box
@@ -382,56 +387,91 @@ $(document).ready(function($) {
 			county_chart.destroy()
 		};
 
-		// var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
+		var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
 		var chart_type = $("input.rb_dataopt_type_chart:checked").val();
 		if (chart_type == "current"){
 			var chardata_type = "line";
-			chartdata = [{	
-				type: chardata_type,
-	            label: 'Reported Deaths',
-	            data: chart_data[2],
-	            yAxisID: 'deaths',
-	            borderColor: chartcolor_1,
-	            fill: false
-	        },
-	        {	
-	        	type: chardata_type,
-	            label: 'Reported Cases',
-	            data: chart_data[1],
-	            yAxisID: 'cases',
-	            borderColor: chartcolor_2,
-	            fill: false
-	        }]
-		} else if (chart_type == "daily"){
-			var chardata_type = "bar";
-			chartdata = [{		
-				type: chardata_type,	     		
-	            label: 'Reported Deaths',
-	            data: chart_data[4],
-	            yAxisID: 'deaths',
-	            borderColor: chartcolor_1,
-	            backgroundColor: chartcolor_1
-	        },
-	        {	
-	        	type: chardata_type,
-	            label: 'Reported Cases',
-	            data: chart_data[3],
-	            yAxisID: 'cases',
-	            borderColor: chartcolor_2,
-	            backgroundColor: chartcolor_2
-	        }]
-		};
 
-		// create chart
-		county_chart = new Chart(chart_container, {
-			type: chardata_type,
-		    data: {
-		        labels: chart_data[0],
-		        datasets: chartdata
-		    },
-		    options: {
-		        scales: {
-		            yAxes: [{
+			if (chart_metric == "cases"){
+				chartdata = [{	
+		        	type: chardata_type,
+		            label: 'Reported Cases',
+		            data: chart_data[1],
+		            yAxisID: 'cases',
+		            borderColor: chartcolor_2,
+		            fill: false
+		        }]
+
+
+	        	yAxis_options = [{
+			            		id: 'cases',
+			            		position: 'right',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Cases',
+							        fontColor: "white"
+							    },
+							    gridLines: {
+							    	display:true,
+							    	color:"#595959",
+							    	lineWidth:0.5
+							    }
+		                	}]
+
+
+			} else if (chart_metric == "deaths"){
+				chartdata = [{	
+					type: chardata_type,
+		            label: 'Reported Deaths',
+		            data: chart_data[2],
+		            yAxisID: 'deaths',
+		            borderColor: chartcolor_1,
+		            fill: false
+		        }]
+
+		        yAxis_options = [{
+			            		id: 'deaths',
+			            		position: 'right',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Deaths',
+							        fontColor: "white"
+							    }
+		               	}]
+
+			} else if (chart_metric == "both"){
+				chartdata = [{	
+					type: chardata_type,
+		            label: 'Reported Deaths',
+		            data: chart_data[2],
+		            yAxisID: 'deaths',
+		            borderColor: chartcolor_1,
+		            fill: false
+		        },
+		        {	
+		        	type: chardata_type,
+		            label: 'Reported Cases',
+		            data: chart_data[1],
+		            yAxisID: 'cases',
+		            borderColor: chartcolor_2,
+		            fill: false
+		        }]
+
+		        yAxis_options = [{
 			            		id: 'cases',
 			            		position: 'right',
 			                	ticks: {
@@ -467,7 +507,136 @@ $(document).ready(function($) {
 							        labelString: 'Reported Deaths',
 							        fontColor: "white"
 							    }
-		               	}],
+		               	}]
+	    	};
+		} else if (chart_type == "daily"){
+			var chardata_type = "bar";
+
+	        if (chart_metric == "cases"){
+				chartdata = [{	
+		        	type: chardata_type,
+		            label: 'Reported Cases',
+		            data: chart_data[3],
+		            yAxisID: 'cases',
+		            borderColor: chartcolor_2,
+		            backgroundColor: chartcolor_2
+		        }]
+
+		        yAxis_options = [{
+			            		id: 'cases',
+			            		position: 'right',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Cases',
+							        fontColor: "white"
+							    },
+							    gridLines: {
+							    	display:true,
+							    	color:"#595959",
+							    	lineWidth:0.5
+							    }
+		                	}]
+			} else if (chart_metric == "deaths"){
+				chartdata = [{		
+					type: chardata_type,	     		
+		            label: 'Reported Deaths',
+		            data: chart_data[4],
+		            yAxisID: 'deaths',
+		            borderColor: chartcolor_1,
+		            backgroundColor: chartcolor_1
+		        }]
+
+		         yAxis_options = [{
+			            		id: 'deaths',
+			            		position: 'right',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Deaths',
+							        fontColor: "white"
+							    }
+		               	}]
+			} else if (chart_metric == "both"){
+				chartdata = [{		
+					type: chardata_type,	     		
+		            label: 'Reported Deaths',
+		            data: chart_data[4],
+		            yAxisID: 'deaths',
+		            borderColor: chartcolor_1,
+		            backgroundColor: chartcolor_1
+		        },
+		        {	
+		        	type: chardata_type,
+		            label: 'Reported Cases',
+		            data: chart_data[3],
+		            yAxisID: 'cases',
+		            borderColor: chartcolor_2,
+		            backgroundColor: chartcolor_2
+		        }]
+
+		        yAxis_options = [{
+			            		id: 'cases',
+			            		position: 'right',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Cases',
+							        fontColor: "white"
+							    },
+							    gridLines: {
+							    	display:true,
+							    	color:"#595959",
+							    	lineWidth:0.5
+							    }
+		                	},
+		                	{
+			            		id: 'deaths',
+			            		position: 'left',
+			                	ticks: {
+				                    beginAtZero: true,
+				                    callback: function(label, index, labels) {
+				                        return $.number(label);
+				                    },
+							        fontColor: "white"
+		                		},
+		                		scaleLabel: {
+							        display: true,
+							        labelString: 'Reported Deaths',
+							        fontColor: "white"
+							    }
+		               	}]
+	    	};
+		};
+
+		// create chart
+		county_chart = new Chart(chart_container, {
+			type: chardata_type,
+		    data: {
+		        labels: chart_data[0],
+		        datasets: chartdata
+		    },
+		    options: {
+		        scales: {
+		            yAxes: yAxis_options,
                		xAxes: [{
 			            		id: 'date',
 			                	ticks: {

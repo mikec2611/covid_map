@@ -79,10 +79,9 @@ body{
 /*date slider box*/
 #slider_container{
     position: absolute;
-    bottom: 2.5%;
+    bottom: 3%;
     width: 50%;
     left: 1.5%;
-    height: 100px;
     z-index: 1100;
    	white-space: nowrap;
   	overflow: hidden;
@@ -93,9 +92,19 @@ body{
     left: 5%;
     top: 20%;
 }
+#slider_title{
+	font-size:24px;
+	font-weight:bold;
+	text-align:center;
+	color:white;
+}
+#slider_box{
+	padding-bottom:5px;
+	padding-top:10px;
+}
 #slider_info_box{
     color: white;
-    font-size: 32px;
+    font-size: 28px;
     text-align: center;
 }
 .slider_val_box{
@@ -265,14 +274,32 @@ td.tooltip_data_val{
 	position:absolute;
 	width: 20%;
 	padding-left: 5px;
-    padding-top: 15px;
+    
     text-align: left;
-    font-size: 16px
+    font-size: 12px
+}
+.ci_options_box_2{
+	position:absolute;
+	width: 20%;
+	padding-left: 5px;
+    
+    text-align: left;
+    font-size: 12px
 }
 #ci_options_1{
-	top: -5px;
+	
 }
 #ci_options_2{
+	top: 25px;
+}
+#ci_options_3{
+	top: 48px;
+}
+#ci_options_4{
+	left: 15%;
+}
+#ci_options_5{
+	left: 15%;
 	top: 25px;
 }
 

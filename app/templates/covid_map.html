@@ -148,7 +148,7 @@
 		<table id="slider_container" class="control_box">
 			<tbody>
 				<tr>
-					<td id='slider_title' class="dataopt_title" colspan="3">Date</td>
+					<td id='slider_title' colspan="3">Date</td>
 				</tr>
 				<tr>
 					<td id='slider_min_box' class="slider_val_box"></td>
@@ -156,7 +156,7 @@
 					<td id='slider_max_box' class="slider_val_box"></td>
 				</tr>
 				<tr>
-					<td colspan="3">
+					<td id="slider_box" colspan="3">
 						<div id='date_slider'></div>
 					</td>
 				</tr>
@@ -179,16 +179,20 @@
 		<table id="county_info_box" class="control_box">
 			<thead>
 				<tr>
-<!-- 					<th id="ci_options_metric ci_options_box">
-						<input id="dataopt_cases_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="cases" checked="checked">Reported Cases</input>
-
-						<input id="dataopt_deaths_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="deaths">Reported Deaths</input>
-					</th>
- -->
 					<th class="ci_options_box" id="ci_options_1">
-						<input id="dataopt_current_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="current" checked="checked">Current Count</input>
+						<input id="dataopt_cases_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="cases" checked="checked">Reported Cases</input>
 					</th>
 					<th class="ci_options_box" id="ci_options_2">
+						<input id="dataopt_deaths_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="deaths">Reported Deaths</input>
+					</th>
+					<th class="ci_options_box" id="ci_options_3">
+						<input id="dataopt_both_chart" class="rb_dataopt_metric_chart rb_dataopt_chart" type="radio" name="dataopt_metric_chart" value="both">Cases & Deaths</input>
+					</th>
+
+					<th class="ci_options_box_2" id="ci_options_4">
+						<input id="dataopt_current_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="current" checked="checked">Current Count</input>
+					</th>
+					<th class="ci_options_box_2" id="ci_options_5">
 						<input id="dataopt_daily_chart" class="rb_dataopt_type_chart rb_dataopt_chart" type="radio" name="dataopt_type_chart" value="daily">Daily Count</input>
 					</th>
 
