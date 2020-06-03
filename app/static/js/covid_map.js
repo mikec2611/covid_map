@@ -678,17 +678,31 @@ $(document).ready(function($) {
 				            return label + ": " + value
 				    	},
 				    	labelColor: function(tooltipItem, chart) {
-				    		if (tooltipItem.datasetIndex == 0){
-				    			var colors = {
-			                        borderColor: chartcolor_1,
-			                        backgroundColor: chartcolor_1
-			                    };
-				    		} else if (tooltipItem.datasetIndex == 1){
+
+			    			if (chart_metric == "cases"){
 								var colors = {
 			                        borderColor: chartcolor_2,
 			                        backgroundColor: chartcolor_2
+				                };
+							} else if (chart_metric == "deaths"){
+								var colors = {
+			                        borderColor: chartcolor_1,
+			                        backgroundColor: chartcolor_1
 			                    };
-				    		}
+							} else if (chart_metric == "both"){
+								if (tooltipItem.datasetIndex == 0){
+					    			var colors = {
+				                        borderColor: chartcolor_1,
+				                        backgroundColor: chartcolor_1
+				                    };
+					    		} else if (tooltipItem.datasetIndex == 1){
+									var colors = {
+				                        borderColor: chartcolor_2,
+				                        backgroundColor: chartcolor_2
+				                    };
+					    		}
+					    	};
+					    	
 		                    return colors
 		                },
                     },
