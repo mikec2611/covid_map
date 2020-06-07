@@ -89,6 +89,43 @@
 			</tbody>
 		</table>
 
+		<!-- total info box -->
+		<table id="total_info_box" class="control_box">
+			<thead>
+				<tr>
+					<th class="ti_options_box" id="ti_options_1">
+						<input id="dataoptall_cases_chart" class="rb_dataoptall_metric_chart rb_dataoptall_chart" type="radio" name="dataoptall_metric_chart" value="cases" checked="checked">Reported Cases</input>
+					</th>
+					<th class="ti_options_box" id="ti_options_2">
+						<input id="dataoptall_deaths_chart" class="rb_dataoptall_metric_chart rb_dataoptall_chart" type="radio" name="dataoptall_metric_chart" value="deaths">Reported Deaths</input>
+					</th>
+					<th class="ti_options_box" id="ti_options_3">
+						<input id="dataoptall_both_chart" class="rb_dataoptall_metric_chart rb_dataoptall_chart" type="radio" name="dataoptall_metric_chart" value="both">Cases & Deaths</input>
+					</th>
+
+					<th class="ti_options_box_2" id="ti_options_4">
+						<input id="dataoptall_current_chart" class="rb_dataoptall_type_chart rb_dataoptall_chart" type="radio" name="dataoptall_type_chart" value="current" checked="checked">Current Count</input>
+					</th>
+					<th class="ti_options_box_2" id="ti_options_5">
+						<input id="dataoptall_daily_chart" class="rb_dataoptall_type_chart rb_dataoptall_chart" type="radio" name="dataoptall_type_chart" value="daily">Daily Count</input>
+					</th>
+
+					<th id="ti_close"><i class="far fa-window-close"></i></th>
+				</tr>
+			</thead>
+			<tbody id="total_info_body">
+				<tr>
+					<td colspan="3" id="total_info_spacer"></td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<canvas id="total_chart_container" height=165px></canvas>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+
 		<!-- data type control box -->
 		<table id="data_options_box" class="control_box">
 

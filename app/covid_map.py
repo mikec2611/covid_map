@@ -29,7 +29,9 @@ def get_data_covid():
 						  )
 
 	df_total = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us.csv')
-
+	df_total["date_id"] = df_total["date"].str.replace('-','')
+	df_total = df_total.loc[df_total["date_id"].astype(int) >= 20200315]
+	
 	return df_total, df_state, df_county
 
 def get_data_geo():
@@ -85,7 +87,35 @@ def run_process(get_data_flag):
 		# get list of dates in data
 		date_list = data_county["date_id"].unique().tolist()
 
-		#MCDEV
+		#calc total metrics
+		geodata_total= {}
+		for total_index, total_record in data_total.iterrows():
+			total_index = total_index - 54
+
+			total_date = total_record[0]
+			total_cases = total_record[1]
+			total_deaths = total_record[2]
+
+			if (total_index > 0):
+				total_cases_PD = total_cases - geodata_total["cases_" + date_list[total_index - 1]]
+				total_deaths_PD = total_deaths - geodata_total["deaths_" + date_list[total_index - 1]]
+				if (total_cases_PD < 0):
+					total_cases_PD = 0
+				if (total_deaths_PD < 0):
+					total_deaths_PD = 0	
+			else:
+				total_cases_PD = 0
+				total_deaths_PD = 0
+
+
+			geodata_total["cases_" + date_list[total_index]] = total_cases
+			geodata_total["deaths_" + date_list[total_index]] = total_deaths
+			geodata_total["casesPD_" + date_list[total_index]] = total_cases_PD
+			geodata_total["deathsPD_" + date_list[total_index]] = total_deaths_PD
+		
+		print(geodata_total)
+
+		#MCDEV -- populate state metrics eventually
 		# get state lookups and remove unmapped shapes in statefile
 		debug_msg("getting state information")
 		unique_state = []
@@ -167,8 +197,11 @@ def run_process(get_data_flag):
 		debug_msg("saving data")
 		# save data
 		data_county.to_csv(county_path)
-		data_total.to_csv(total_path)
 		unique_counties.to_csv(unique_county_path, header=True)
+
+		#save total data
+		with open(total_path, 'w') as f:
+			dump(geodata_total, f)
 
 		# save county shapes
 		with open(geodata_county_path, 'w') as f:
@@ -181,19 +214,19 @@ def run_process(get_data_flag):
 		# prep total data
 		data_total = data_total.to_dict('records')
 
-		return geodata_county, geodata_state, date_list, unique_counties, data_total
+		return geodata_county, geodata_state, date_list, unique_counties, geodata_total
 	else:
 		debug_msg("loading locally")
-
-		# load total data
-		data_total = pd.read_csv(total_path)
-		data_total = data_total.to_dict('records')
 
 		# load county data
 		data_county = pd.read_csv(county_path)
 		date_list = data_county["date_id"].astype(str).unique().tolist()
 		unique_counties = pd.read_csv(unique_county_path)
 		unique_counties = unique_counties.values.tolist()
+
+		# load total data
+		with open(total_path) as f:
+			geodata_total = json.load(f)
 
 		# load county shapes
 		with open(geodata_county_path) as f:
@@ -203,7 +236,7 @@ def run_process(get_data_flag):
 		with open(geodata_state_path) as f:
 			geodata_state = json.load(f)
 
-		return geodata_county, geodata_state, date_list, unique_counties, data_total
+		return geodata_county, geodata_state, date_list, unique_counties, geodata_total
 
 
 def debug_msg(msg):

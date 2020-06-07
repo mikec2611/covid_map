@@ -5,6 +5,7 @@ var $active_county_prop = "";
 var $selected_county = "";
 var $selected_county_prop = "";
 var county_chart;
+var total_chart;
 var unique_county_list;
 
 var chartcolor_1 = "orange"
@@ -13,8 +14,9 @@ var chartcolor_2 = "forestgreen"
 $(document).ready(function($) {
 	// console.log(unique_county)
 	// console.log(date_list)
-	// console.log(geodata_county)
+	console.log(geodata_county)
 	// console.log(geodata_state)
+	console.log(data_total)
 
 	//cache commonly used elements
 	var $date_slider = $("#date_slider")
@@ -159,8 +161,9 @@ $(document).ready(function($) {
 			$active_county_prop = ""
 			$tooltip_box.hide() 
 		});
-
-		// start map
+		
+		// start app
+		$('#dataoptall_cases, #dataoptall_current, #dataoptall_current_chart, #dataoptall_cases_chart').trigger('change');
 		$('#dataopt_cases, #dataopt_current, #dataopt_current_chart, #dataopt_cases_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
@@ -179,7 +182,39 @@ $(document).ready(function($) {
         }
     });
 
-    // select new data metric/type for mapping
+    // select new data metric/type for total mapping
+	$("input.rb_dataoptall").change(function(){
+		update_ti_map($date_slider.slider("option","value"));
+
+		// color radiobutton choices
+		if ($(this).hasClass("rb_dataoptall_metric")){
+			$("input.rb_dataoptall_metric").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+		} else if ($(this).hasClass("rb_dataoptall_type")){
+			$("input.rb_dataoptall_type").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+		};
+		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
+	});
+
+	// update the total chart
+	$("input.rb_dataoptall_type_chart").change(function(){
+		update_ti_chart();
+		$("input.rb_dataoptall_type_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
+		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
+	})
+	$("input.rb_dataoptall_metric_chart").change(function(){
+		update_ti_chart();
+		$("input.rb_dataoptall_metric_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
+		$(this).parent().css({'color': 'greenyellow', 'font-weight': 'bold'});
+	})
+
+	// close total info box
+	$('#ti_close > i').on('click', function(){
+		toggle_ti_box(false);
+		$selected_county = ""
+		$selected_county_prop = ""
+	});
+
+    // select new data metric/type for county mapping
 	$("input.rb_dataopt").change(function(){
 		update_map($date_slider.slider("option","value"));
 
@@ -192,7 +227,7 @@ $(document).ready(function($) {
 		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 	});
 
-	// update the chart
+	// update the county chart
 	$("input.rb_dataopt_type_chart").change(function(){
 		update_ci_chart();
 		$("input.rb_dataopt_type_chart").parent().css({'color': 'inherit', 'font-weight': 'inherit'});
@@ -213,7 +248,8 @@ $(document).ready(function($) {
 
 	// ---functions
 
-	// update map based on date_slider value
+
+	// update county map based on date_slider value
 	function update_map(date_val){
 		var curr_date = new Date(date_val * 1000)
 		var curr_date_id = curr_date.toISOString().split('T')[0]
@@ -365,30 +401,82 @@ $(document).ready(function($) {
 		$tooltip_box.css({'top': mouseY + 10,'left': mouseX + 10}).show();
 	};
 
+	// update the total info chart
+	function update_ti_chart(){
+		chart_data = get_ti_chart_data()
+		load_info_chart(chart_data, "total")
+	};
+
+	// update the county info chart
+	function update_ci_chart(){
+		chart_data = get_ci_chart_data()
+		load_info_chart(chart_data, "county")
+	};
+
 	// show info on the clicked county
 	function show_county_info(){
 		update_ci_chart()
 		toggle_ci_box(true)
 	};
 
-	// update the county info chart
-	function update_ci_chart(){
-		chart_data = get_chart_data()
-		load_chart(chart_data)
-	};
-
-	// load the county info chart
-	function load_chart(chart_data){
+	// load an info chart
+	function load_info_chart(chart_data, chart_category){
 		var county_data = $selected_county_prop;
-		var chart_container = $("#county_chart_container")
-		
-		// destroy existing chart if it exists
-		if (typeof(county_chart) != "undefined"){
-			county_chart.destroy()
-		};
+		if (chart_category == "county"){
+			var chart_container = $("#county_chart_container")
+			var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
+			var chart_type = $("input.rb_dataopt_type_chart:checked").val();
 
-		var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
-		var chart_type = $("input.rb_dataopt_type_chart:checked").val();
+			// destroy existing chart if it exists
+			if (typeof(county_chart) != "undefined"){
+				county_chart.destroy()
+			};
+
+			var chart_title = {
+		            display: true,
+		            text: county_data["NAMELSAD"] + ", " + county_data["state_name"],
+		            fontSize: 24,
+		            fontColor: "white"
+		        }
+
+		    var chart_legend = {
+		        	labels:{
+		        		fontColor:"white",
+		        		fontSize: 14
+		        	},
+		        	onHover: (event, chartElement) => {
+				    	event.target.style.cursor = 'pointer'
+					}
+		        }
+		} else {
+			var chart_container = $("#total_chart_container")
+			var chart_metric = $("input.rb_dataoptall_metric_chart:checked").val();
+			var chart_type = $("input.rb_dataoptall_type_chart:checked").val();
+
+			// destroy existing chart if it exists
+			if (typeof(total_chart) != "undefined"){
+				total_chart.destroy()
+			};
+
+			var chart_title = {
+		            display: true,
+		            text: "Total U.S.",
+		            fontSize: 16,
+		            fontColor: "white",
+		            padding: 0
+		        }
+
+		    var chart_legend = {
+		        	labels:{
+		        		fontColor:"white",
+		        		fontSize: 10
+		        	},
+		        	onHover: (event, chartElement) => {
+				    	event.target.style.cursor = 'pointer'
+					}
+		        }
+		};
+	
 		if (chart_type == "current"){
 			var chardata_type = "line";
 
@@ -628,7 +716,7 @@ $(document).ready(function($) {
 		};
 
 		// create chart
-		county_chart = new Chart(chart_container, {
+		chart_temp = new Chart(chart_container, {
 			type: chardata_type,
 		    data: {
 		        labels: chart_data[0],
@@ -649,20 +737,8 @@ $(document).ready(function($) {
 		                		},
 		                	}]
 		        },
-		        title: {
-		            display: true,
-		            text: county_data["NAMELSAD"] + ", " + county_data["state_name"],
-		            fontSize: 24,
-		            fontColor: "white"
-		        },
-		        legend:{
-		        	labels:{
-		        		fontColor:"white"
-		        	},
-		        	onHover: (event, chartElement) => {
-				    	event.target.style.cursor = 'pointer'
-					}
-		        },
+		        title: chart_title,
+		        legend: chart_legend,
 		        tooltips:{
 	        		callbacks: {
 	        			title: function(tooltipItem, data){
@@ -712,9 +788,53 @@ $(document).ready(function($) {
 				}
 		    }
 		});
+
+		if (chart_category == "county"){
+			county_chart = chart_temp;
+		} else {
+			total_chart = chart_temp;
+		};
 	};
 
-	function get_chart_data(){
+	function get_ti_chart_data(){
+
+		// create array to feed to chart
+		var chart_data = [[],[],[],[],[]]
+		$.each(date_list, function(date_ind, date_val){
+
+			chart_data[0].push(date_val)
+
+			// current
+			if (typeof(data_total["cases_" +date_val]) != "undefined"){
+				chart_data[1].push(data_total["cases_" + date_val])
+			} else{
+				chart_data[1].push(0);
+			};
+
+			if (typeof(data_total["deaths_" + date_val]) != "undefined"){
+				chart_data[2].push(data_total["deaths_" + date_val])
+			} else{
+				chart_data[2].push(0)
+			};
+
+			// per day
+			if (typeof(data_total["casesPD_" +date_val]) != "undefined"){
+				chart_data[3].push(data_total["casesPD_" + date_val])
+			} else{
+				chart_data[3].push(0);
+			};
+			if (typeof(data_total["deathsPD_" + date_val]) != "undefined"){
+				chart_data[4].push(data_total["deathsPD_" + date_val])
+			} else{
+				chart_data[4].push(0)
+			};
+			
+		});
+
+		return chart_data;
+	};
+
+	function get_ci_chart_data(){
 		var county_data = $selected_county_prop;
 
 		// create array to feed to chart

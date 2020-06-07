@@ -158,13 +158,77 @@ body{
 	top:3px;
 }
 
+/* county info box*/
+#total_info_box{
+    position: absolute;
+    width: 25%;
+    height:32%;
+    left: 1.5%;
+    top: 5.5%;
+    color:white;
+    z-index: 1100;
+    table-layout: fixed;
+    display:none;
+}
+#ti_close{
+	text-align:right;
+	padding-right:5px;
+}
+#ti_close > i{
+	position: absolute;
+    right: 1%;
+    top: 1%;
+	cursor:pointer;
+	font-size:25px;
+}
+#ti_close > i:hover{
+	color:orange;
+}
+.rb_dataoptall_chart{
+	width:12px;
+	height:12px;
+	margin-right:5%;
+	cursor:pointer;
+	position:relative;
+}
+.ti_options_box{
+	position:absolute;
+	width: 25%;
+	padding-left: 5px;
+    text-align: left;
+    font-size: 10px
+}
+.ti_options_box_2{
+	position:absolute;
+	width: 20%;
+	padding-left: 40px;
+    text-align: left;
+    font-size: 10px
+}
+#ti_options_1{
+	
+}
+#ti_options_2{
+	top: 25px;
+}
+#ti_options_3{
+	top: 48px;
+}
+#ti_options_4{
+	left: 15%;
+}
+#ti_options_5{
+	left: 15%;
+	top: 25px;
+}
+
 /*legend*/
 #legend_box{
 	position:absolute;
 	z-index:1100;
 	width:225px;
 	left:1.5%;
-	top: 37.5%;
+	top: 39%;
 	color:white;
 	padding:5px;
 	display:none;
