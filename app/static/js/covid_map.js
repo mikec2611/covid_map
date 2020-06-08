@@ -14,9 +14,9 @@ var chartcolor_2 = "forestgreen"
 $(document).ready(function($) {
 	// console.log(unique_county)
 	// console.log(date_list)
-	console.log(geodata_county)
+	// console.log(geodata_county)
 	// console.log(geodata_state)
-	console.log(data_total)
+	// console.log(data_total)
 
 	//cache commonly used elements
 	var $date_slider = $("#date_slider")
@@ -210,8 +210,9 @@ $(document).ready(function($) {
 	// close total info box
 	$('#ti_close > i').on('click', function(){
 		toggle_ti_box(false);
-		$selected_county = ""
-		$selected_county_prop = ""
+	});
+	$('#ti_open > i').on('click', function(){
+		toggle_ti_box(true);
 	});
 
     // select new data metric/type for county mapping
@@ -448,6 +449,18 @@ $(document).ready(function($) {
 				    	event.target.style.cursor = 'pointer'
 					}
 		        }
+
+		    var chart_xaxis = [{
+			            		id: 'date',
+			                	ticks: {
+			                		callback: function(label, index, labels) {
+			                			date_val = new Date(label.substring(0,4), label.substring(4,6) -1, label.substring(6,8))
+			                			date_val = format_date(date_val).substring(0,8)
+				                        return date_val;
+				                    },
+							        fontColor: "white"
+		                		},
+		                	}]
 		} else {
 			var chart_container = $("#total_chart_container")
 			var chart_metric = $("input.rb_dataoptall_metric_chart:checked").val();
@@ -469,12 +482,27 @@ $(document).ready(function($) {
 		    var chart_legend = {
 		        	labels:{
 		        		fontColor:"white",
-		        		fontSize: 10
+		        		fontSize: 12
 		        	},
 		        	onHover: (event, chartElement) => {
 				    	event.target.style.cursor = 'pointer'
 					}
 		        }
+
+		    var chart_xaxis = [{
+            		id: 'date',
+                	ticks: {
+                		callback: function(label, index, labels) {
+                			date_val = new Date(label.substring(0,4), label.substring(4,6) -1, label.substring(6,8))
+                			date_val = format_date(date_val).substring(0,8)
+	                        return date_val;
+	                    },
+				        fontColor: "white",
+				        fontSize:11,
+				        autoSkip: true,
+        				maxTicksLimit: 10
+            		},
+            	}]
 		};
 	
 		if (chart_type == "current"){
@@ -497,7 +525,7 @@ $(document).ready(function($) {
 			                	ticks: {
 				                    beginAtZero: true,
 				                    callback: function(label, index, labels) {
-				                        return $.number(label);
+				                        return ($.number(label/1000)).toString() + 'k';
 				                    },
 							        fontColor: "white"
 		                		},
@@ -565,7 +593,7 @@ $(document).ready(function($) {
 			                	ticks: {
 				                    beginAtZero: true,
 				                    callback: function(label, index, labels) {
-				                        return $.number(label);
+				                        return ($.number(label/1000)).toString() + 'k';
 				                    },
 							        fontColor: "white"
 		                		},
@@ -725,17 +753,7 @@ $(document).ready(function($) {
 		    options: {
 		        scales: {
 		            yAxes: yAxis_options,
-               		xAxes: [{
-			            		id: 'date',
-			                	ticks: {
-			                		callback: function(label, index, labels) {
-			                			date_val = new Date(label.substring(0,4), label.substring(4,6) -1, label.substring(6,8))
-			                			date_val = format_date(date_val).substring(0,8)
-				                        return date_val;
-				                    },
-							        fontColor: "white"
-		                		},
-		                	}]
+               		xAxes: chart_xaxis
 		        },
 		        title: chart_title,
 		        legend: chart_legend,
@@ -871,6 +889,19 @@ $(document).ready(function($) {
 		});
 
 		return chart_data;
+	};
+
+	// hide/show total info box
+	function toggle_ti_box(bool_action){
+		if (bool_action == true){
+			$('#total_info_box').css('width', '25%')
+			$('#ti_minimized').hide();
+			$('#ti_maximized, #total_info_body').show();
+		} else {
+			$('#total_info_box').css('width', '12%')
+			$('#ti_maximized, #total_info_body').hide();
+			$('#ti_minimized').show();
+		};
 	};
 
 	// hide/show the county info box

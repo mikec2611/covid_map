@@ -92,7 +92,11 @@
 		<!-- total info box -->
 		<table id="total_info_box" class="control_box">
 			<thead>
-				<tr>
+				<tr id="ti_minimized">
+					<th colspan="4" id="ti_minimize_title" >Total U.S. Chart</th>
+					<th colspan="2" id="ti_open"><i class="fas fa-expand-arrows-alt"></i></th>
+				</tr>
+				<tr id="ti_maximized">
 					<th class="ti_options_box" id="ti_options_1">
 						<input id="dataoptall_cases_chart" class="rb_dataoptall_metric_chart rb_dataoptall_chart" type="radio" name="dataoptall_metric_chart" value="cases" checked="checked">Reported Cases</input>
 					</th>
@@ -110,7 +114,7 @@
 						<input id="dataoptall_daily_chart" class="rb_dataoptall_type_chart rb_dataoptall_chart" type="radio" name="dataoptall_type_chart" value="daily">Daily Count</input>
 					</th>
 
-					<th id="ti_close"><i class="far fa-window-close"></i></th>
+					<th id="ti_close"><i class="fas fa-compress-alt"></i></th>
 				</tr>
 			</thead>
 			<tbody id="total_info_body">

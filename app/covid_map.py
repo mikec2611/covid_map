@@ -107,13 +107,10 @@ def run_process(get_data_flag):
 				total_cases_PD = 0
 				total_deaths_PD = 0
 
-
 			geodata_total["cases_" + date_list[total_index]] = total_cases
 			geodata_total["deaths_" + date_list[total_index]] = total_deaths
 			geodata_total["casesPD_" + date_list[total_index]] = total_cases_PD
 			geodata_total["deathsPD_" + date_list[total_index]] = total_deaths_PD
-		
-		print(geodata_total)
 
 		#MCDEV -- populate state metrics eventually
 		# get state lookups and remove unmapped shapes in statefile
