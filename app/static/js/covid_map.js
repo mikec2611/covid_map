@@ -554,7 +554,7 @@ $(document).ready(function($) {
 
 		        yAxis_options = [{
 			            		id: 'deaths',
-			            		position: 'right',
+			            		position: 'left',
 			                	ticks: {
 				                    beginAtZero: true,
 				                    callback: function(label, index, labels) {
@@ -566,6 +566,11 @@ $(document).ready(function($) {
 							        display: true,
 							        labelString: 'Reported Deaths',
 							        fontColor: "white"
+							    },
+							    gridLines: {
+							    	display:true,
+							    	color:"#595959",
+							    	lineWidth:0.5
 							    }
 		               	}]
 
@@ -640,7 +645,7 @@ $(document).ready(function($) {
 
 		        yAxis_options = [{
 			            		id: 'cases',
-			            		position: 'right',
+			            		position: 'left',
 			                	ticks: {
 				                    beginAtZero: true,
 				                    callback: function(label, index, labels) {
@@ -671,7 +676,7 @@ $(document).ready(function($) {
 
 		         yAxis_options = [{
 			            		id: 'deaths',
-			            		position: 'right',
+			            		position: 'left',
 			                	ticks: {
 				                    beginAtZero: true,
 				                    callback: function(label, index, labels) {
@@ -683,6 +688,11 @@ $(document).ready(function($) {
 							        display: true,
 							        labelString: 'Reported Deaths',
 							        fontColor: "white"
+							    },
+							    gridLines: {
+							    	display:true,
+							    	color:"#595959",
+							    	lineWidth:0.5
 							    }
 		               	}]
 			} else if (chart_metric == "both"){
