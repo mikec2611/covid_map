@@ -927,7 +927,6 @@ $(document).ready(function($) {
 			$('#ti_minimized').hide();
 			$('#ti_maximized, #total_info_body').show();
 		} else {
-			$('#total_info_box').css('width', '12%')
 			$('#ti_maximized, #total_info_body').hide();
 			$('#ti_minimized').show();
 		};
