@@ -1,6 +1,13 @@
 @media only screen and (max-height: 850px) {
 		#total_info_box{
 			height:46px !important;
+			top:7.5% !important;
+		}
+		.tib_width_largescreen{
+			width:25% !important;
+		}
+		.tib_width_smallscreen{
+			width:33% !important;
 		}
 
 		#data_options_box{
@@ -245,7 +252,6 @@ body{
 /* county info box*/
 #total_info_box{
     position: absolute;
-    width: 25%;
     height:32%;
     left: 1.5%;
     top: 5.5%;
@@ -253,6 +259,12 @@ body{
     z-index: 1100;
     table-layout: fixed;
     display:none;
+}
+.tib_width_largescreen{
+	width:25%;
+}
+.tib_width_smallscreen{
+	width:33%;
 }
 #ti_close{
 	text-align:right;

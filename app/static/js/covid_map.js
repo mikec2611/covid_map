@@ -11,6 +11,14 @@ var unique_county_list;
 var chartcolor_1 = "orange"
 var chartcolor_2 = "forestgreen"
 
+$(window).on('resize', function(){
+	if ($(window).height() < 850){
+		$('#total_info_box').removeClass('tib_width_largescreen').addClass('.tib_width_smallscreen')
+	} else {
+		$('#total_info_box').addClass('tib_width_largescreen').removeClass('.tib_width_smallscreen')
+	}
+})
+
 $(document).ready(function($) {
 	// console.log(unique_county)
 	// console.log(date_list)
@@ -41,6 +49,12 @@ $(document).ready(function($) {
 	   mouseX = e.pageX; 
 	   mouseY = e.pageY;
 	});
+
+	if ($(window).height() < 850){
+		$('#total_info_box').removeClass('tib_width_largescreen').addClass('.tib_width_smallscreen')
+	} else {
+		$('#total_info_box').addClass('tib_width_largescreen').removeClass('.tib_width_smallscreen')
+	}
 
 	// show/hide app info
 	$('#btn_info').click(function(){
@@ -903,8 +917,13 @@ $(document).ready(function($) {
 
 	// hide/show total info box
 	function toggle_ti_box(bool_action){
+		if ($(window).height() < 850){
+			$('#total_info_box').removeClass('tib_width_largescreen').addClass('.tib_width_smallscreen')
+		} else {
+			$('#total_info_box').addClass('tib_width_largescreen').removeClass('.tib_width_smallscreen')
+		}
+
 		if (bool_action == true){
-			$('#total_info_box').css('width', '25%')
 			$('#ti_minimized').hide();
 			$('#ti_maximized, #total_info_body').show();
 		} else {
