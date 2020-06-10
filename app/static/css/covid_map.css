@@ -1,3 +1,89 @@
+@media only screen and (max-height: 850px) {
+		#total_info_box{
+			height:46px !important;
+		}
+
+		#data_options_box{
+	      top:51.5% !important;
+	      min-width:174px !important;
+		}
+
+		#legend_box{
+	      left:200px !important;
+	      top:50% !important;
+		}
+		.ti_options_box{
+		    font-size:10px !important;
+		}
+		.ti_options_box_2{
+		    padding-left:225px !important;
+		    font-size: 10px !important;
+		}
+		#ti_options_2{
+		    top:20px !important;
+		}
+		#ti_options_3{
+		    top:37px !important;
+		}
+		.rb_dataoptall_chart{
+		    height:10px !important;
+		    width:10px !important;
+		}
+		#ti_minimize_title{
+		    font-size:12px !important;
+		}
+		.ci_options_box_2{
+		    padding-left:358px !important;
+		    font-size:10px !important;
+		}
+		.ci_options_box{
+		              font-size:10px !important;
+		}
+		#legend_data_type{
+		              font-size:12px !important;
+		}
+		#first_legend_row{
+		              height:0 !important;
+		}
+		#legend_data_metric{
+		              font-size:15px !important;
+		}
+		.dataopt_title{
+		              font-size:16px !important;
+		}
+		.rb_dataopt_box{
+		              font-size:13px !important;
+		}
+		 
+		#slider_title{
+		              font-size:15px !important;
+		}
+		#slider_info_box{
+		              font-size:15px !important;
+		}
+		.slider_val_box{
+		              font-size:11px !important;
+		}
+		#data_update_val{
+			font-size:11px !important;
+		}
+		#data_update{
+			font-size:16px !important;
+		}
+		#page_title{
+			font-size:22px !important;
+			/*color:red;*/
+		}
+		#btn_info {
+			font-size:25px !important;
+		}
+		#top_bar{
+	    	height:36px !important;
+		}
+}
+
+
+
 body{
 	margin:0;
 	padding: 0;
@@ -435,3 +521,5 @@ tr.ai_row{
 a:visited{
 	color:orange;
 }
+
+
