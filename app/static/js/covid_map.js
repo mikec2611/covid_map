@@ -13,9 +13,9 @@ var chartcolor_2 = "forestgreen"
 
 $(window).on('resize', function(){
 	if ($(window).height() < 850){
-		$('#total_info_box').removeClass('tib_width_largescreen').addClass('.tib_width_smallscreen')
+		$('#total_info_box').removeClass('tib_width_largescreen').addClass('tib_width_smallscreen')
 	} else {
-		$('#total_info_box').addClass('tib_width_largescreen').removeClass('.tib_width_smallscreen')
+		$('#total_info_box').addClass('tib_width_largescreen').removeClass('tib_width_smallscreen')
 	}
 })
 
@@ -51,9 +51,9 @@ $(document).ready(function($) {
 	});
 
 	if ($(window).height() < 850){
-		$('#total_info_box').removeClass('tib_width_largescreen').addClass('.tib_width_smallscreen')
+		$('#total_info_box').removeClass('tib_width_largescreen').addClass('tib_width_smallscreen')
 	} else {
-		$('#total_info_box').addClass('tib_width_largescreen').removeClass('.tib_width_smallscreen')
+		$('#total_info_box').addClass('tib_width_largescreen').removeClass('tib_width_smallscreen')
 	}
 
 	// show/hide app info
@@ -918,9 +918,9 @@ $(document).ready(function($) {
 	// hide/show total info box
 	function toggle_ti_box(bool_action){
 		if ($(window).height() < 850){
-			$('#total_info_box').removeClass('tib_width_largescreen').addClass('.tib_width_smallscreen')
+			$('#total_info_box').removeClass('tib_width_largescreen').addClass('tib_width_smallscreen')
 		} else {
-			$('#total_info_box').addClass('tib_width_largescreen').removeClass('.tib_width_smallscreen')
+			$('#total_info_box').addClass('tib_width_largescreen').removeClass('tib_width_smallscreen')
 		}
 
 		if (bool_action == true){
