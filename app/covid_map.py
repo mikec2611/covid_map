@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import numpy as np
 import datetime
 import json
 import os
@@ -132,6 +133,16 @@ def run_process(get_data_flag):
 
 		geodata_state["features"] = saved_features
 
+		# calculate deciles for map coloring
+		data_county_total = pd.DataFrame()
+		for date_val in date_list:
+			data_county_slice = data_county.loc[data_county["date_id"] == date_val]
+			data_county_slice['cases_decile'] = pd.qcut(data_county_slice['cases'], 10, labels=False, duplicates='drop')
+			data_county_slice['cases_decile'] = data_county_slice['cases_decile'] + 1
+			data_county_slice['deaths_decile'] = pd.qcut(data_county_slice['deaths'], 10, labels=False, duplicates='drop')
+			data_county_slice['deaths_decile'] = data_county_slice['deaths_decile'] + 1
+			data_county_total = data_county_total.append(data_county_slice)
+		data_county = data_county_total
 
 		# add properties to each county geojson with covid data
 		debug_msg("populating features")
@@ -174,7 +185,6 @@ def run_process(get_data_flag):
 							feature["properties"]["cases_" + date_val] = date_cases
 							feature["properties"]["deaths_" + date_val] = date_deaths
 
-
 							feature["properties"]["casesPD_" + date_val] = date_casesPD
 							feature["properties"]["deathsPD_" + date_val] = date_deathsPD
 
@@ -182,6 +192,12 @@ def run_process(get_data_flag):
 								prior_cases = date_cases
 							if date_deaths > 0:
 								prior_deaths = date_deaths
+
+							# deciles
+							date_cases_decile = date_data["cases_decile"].values[0].astype("float")
+							date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
+							feature["properties"]["cases_decile_" + date_val] = date_cases_decile
+							feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
 
 				saved_features.append(feature)
 				county_ctr+=1

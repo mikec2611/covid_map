@@ -177,14 +177,15 @@ $(document).ready(function($) {
 		});
 		
 		// start app
-		$('#dataoptall_cases, #dataoptall_current, #dataoptall_current_chart, #dataoptall_cases_chart').trigger('change');
-		$('#dataopt_cases, #dataopt_current, #dataopt_current_chart, #dataopt_cases_chart').trigger('change');
+		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart').trigger('change');
+		$('#dataopt_cases, #dataopt_current, #dataopt_daily_chart, #dataopt_cases_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
 	});
 
 	// create date slider
 	var zoom_threshold = 6.5
+	var timeout
     $date_slider.slider({
         range: false,
         min: first_date_sld / 1000,
@@ -192,7 +193,10 @@ $(document).ready(function($) {
         step: 86400,
         value: last_date_sld / 1000,
         slide: function(event, ui) {
-        	update_map(ui.value)
+        	clearTimeout(timeout);
+		    timeout = setTimeout(function() {
+		        update_map(ui.value)
+		    }, 100);
         }
     });
 
@@ -276,6 +280,16 @@ $(document).ready(function($) {
 			var curr_lookup = curr_datatype_metric + "_" + curr_date_id.replace(/-/g, "");
 		};
 		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type)
+
+
+		// curr_lookup = curr_datatype_metric + "_decile_" + curr_date_id.replace(/-/g, "");
+		// legend_stops = [
+		// 			[0, 'darkgray'],
+		// 			[3, 'green'],
+		// 			[5, 'yellow'],
+		// 			[7, 'darkorange'],
+		// 			[10, 'red']
+		// 		];
 
 		map.setPaintProperty('us_counties', 'fill-color', {
 			property: curr_lookup,
