@@ -4,6 +4,8 @@ var $active_county = "";
 var $active_county_prop = "";
 var $selected_county = "";
 var $selected_county_prop = "";
+var $active_state = "";
+var $active_state_prop = "";
 var county_chart;
 var total_chart;
 var unique_county_list;
@@ -23,7 +25,7 @@ $(document).ready(function($) {
 	// console.log(unique_county)
 	// console.log(date_list)
 	// console.log(geodata_county)
-	// console.log(geodata_state)
+	console.log(geodata_state)
 	// console.log(data_total)
 
 	//cache commonly used elements
@@ -123,7 +125,26 @@ $(document).ready(function($) {
 									],
 			}
 		});
-		// add state layer
+		// add state fill layer
+		map.addLayer({
+			'id': 'us_states_fill',
+			'type': 'fill',
+			'source': 'us_states',
+			// 'layout': {},
+			'paint': {
+				'fill-opacity': ['case',
+									['boolean', ['feature-state', 'hover'], false],
+				 					0.85,
+									0.55
+	            				],
+				'fill-outline-color': ['case',
+										['boolean', ['feature-state', 'clicked'], false],
+										 'cyan',
+										 'black'
+									],
+			}
+		});
+		// add state line layer
 		map.addLayer({
 			'id': 'us_states',
 			'type': 'line',
@@ -136,7 +157,7 @@ $(document).ready(function($) {
 			}
 		});
 
-		// events when click on layer. show county info
+		// events when click on us_counties layer. show county info
 		map.on('click', 'us_counties', function(e) {
 			event_shp = e.features[0]
 			if ($selected_county.id != event_shp.id){
@@ -151,7 +172,22 @@ $(document).ready(function($) {
 			};
 		});
 
-		// events when mouse moves on layer. highlight shape and show tooltip
+		// // events when click on us_states_fill layer. show county info
+		// map.on('click', 'us_states_fill', function(e) {
+		// 	event_shp = e.features[0]
+		// 	if ($selected_county.id != event_shp.id){
+		// 		// if ($selected_county != ""){
+		// 		// 	toggle_highlight_shp($selected_county.id, false)
+		// 		// };
+
+		// 		$selected_county = event_shp
+		// 		$selected_county_prop = event_shp.properties
+		// 		// toggle_highlight_shp(event_shp.id, true)
+		// 		show_county_info()
+		// 	};
+		// });
+
+		// events when mouse moves on us_counties layer. highlight shape and show tooltip
 		map.on('mousemove', 'us_counties', function(e) {
 			event_shp = e.features[0]
 			if ($active_county.id != event_shp.id){
@@ -166,7 +202,7 @@ $(document).ready(function($) {
 			};
 		});
 
-		// events when mouse leaves layer. hide tooltip
+		// events when mouse leaves us_counties layer. hide tooltip
 		map.on('mouseleave', 'us_counties', function(e) {
 			if ($active_county != ""){
 				toggle_highlight_shp($active_county.id, false)
@@ -175,9 +211,34 @@ $(document).ready(function($) {
 			$active_county_prop = ""
 			$tooltip_box.hide() 
 		});
+
+		// events when mouse moves on us_states_fill layer. highlight shape and show tooltip
+		map.on('mousemove', 'us_states_fill', function(e) {
+			event_shp = e.features[0]
+			if ($active_state.id != event_shp.id){
+				if ($active_state != ""){
+					toggle_highlight_shp_st($active_state.id, false)
+				};
+
+				$active_state = event_shp
+				$active_state_prop = event_shp.properties
+				toggle_highlight_shp_st(event_shp.id, true)
+				update_tooltip()
+			};
+		});
+
+		// events when mouse leaves us_states_fill layer. hide tooltip
+		map.on('mouseleave', 'us_states_fill', function(e) {
+			if ($active_state != ""){
+				toggle_highlight_shp_st($active_state.id, false)
+			};
+			$active_state = ""
+			$active_state_prop = ""
+			$tooltip_box.hide() 
+		});
 		
 		// start app
-		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart').trigger('change');
+		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart, #data_level_county').trigger('change');
 		$('#dataopt_cases, #dataopt_current, #dataopt_daily_chart, #dataopt_cases_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
@@ -265,6 +326,15 @@ $(document).ready(function($) {
 		$selected_county_prop = ""
 	});
 
+	// toggle between county and state view
+	$("input.rb_data_level").change(function(){
+		update_map($date_slider.slider("option","value"));
+
+		// color radiobutton choices
+		$("input.rb_data_level").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
+	});
+
 	// ---functions
 
 
@@ -274,12 +344,13 @@ $(document).ready(function($) {
 		var curr_date_id = curr_date.toISOString().split('T')[0]
 		var curr_datatype_metric = $("input.rb_dataopt_metric:checked").val();
 		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
+		var curr_data_level = $("input.rb_data_level:checked").val();
 		if (curr_datatype_type == "daily"){
 			var curr_lookup = curr_datatype_metric + "PD_" + curr_date_id.replace(/-/g, "")	;
 		} else if (curr_datatype_type == "current"){
 			var curr_lookup = curr_datatype_metric + "_" + curr_date_id.replace(/-/g, "");
 		};
-		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type)
+		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type, curr_data_level)
 
 
 		// curr_lookup = curr_datatype_metric + "_decile_" + curr_date_id.replace(/-/g, "");
@@ -291,10 +362,23 @@ $(document).ready(function($) {
 		// 			[10, 'red']
 		// 		];
 
-		map.setPaintProperty('us_counties', 'fill-color', {
-			property: curr_lookup,
-			stops: legend_stops
-		});
+		if (curr_data_level == "county"){
+			map.setPaintProperty('us_counties', 'fill-color', {
+				property: curr_lookup,
+				stops: legend_stops
+			});
+			map.setLayoutProperty('us_counties', 'visibility', 'visible');
+			map.setLayoutProperty('us_states_fill', 'visibility', 'none');
+		} else if (curr_data_level == "state"){
+			map.setPaintProperty('us_states_fill', 'fill-color', {
+				property: curr_lookup,
+				stops: legend_stops
+			});
+			map.setLayoutProperty('us_counties', 'visibility', 'none');
+			map.setLayoutProperty('us_states_fill', 'visibility', 'visible');
+		};
+
+
 		update_legend(legend_stops)
 		$slider_info_box.text(format_date(curr_date));
 
@@ -304,42 +388,82 @@ $(document).ready(function($) {
 	};
 
 	// calculate which legend stops to use
-	function calc_legend_stops(curr_datatype_metric, curr_datatype_type){
-		if (curr_datatype_type == "current"){
-			if (curr_datatype_metric == "cases"){
-				legend_stops = [
-					[0, 'darkgray'],
-					[10, 'green'],
-					[100, 'yellow'],
-					[1000, 'darkorange'],
-					[10000, 'red']
-				];
-			} else if (curr_datatype_metric == "deaths") {
-				legend_stops = [
-					[0, 'darkgray'],
-					[1, 'green'],
-					[10, 'yellow'],
-					[100, 'darkorange'],
-					[1000, 'red']
-				];
+	function calc_legend_stops(curr_datatype_metric, curr_datatype_type, curr_data_level ){
+		if (curr_data_level == "county"){
+			if (curr_datatype_type == "current"){
+				if (curr_datatype_metric == "cases"){
+					legend_stops = [
+						[0, 'darkgray'],
+						[10, 'green'],
+						[100, 'yellow'],
+						[1000, 'darkorange'],
+						[10000, 'red']
+					];
+				} else if (curr_datatype_metric == "deaths") {
+					legend_stops = [
+						[0, 'darkgray'],
+						[1, 'green'],
+						[10, 'yellow'],
+						[100, 'darkorange'],
+						[1000, 'red']
+					];
+				}
+			} else if (curr_datatype_type == "daily"){
+				if (curr_datatype_metric == "cases"){
+					legend_stops = [
+						[0, 'darkgray'],
+						[1, 'green'],
+						[10, 'yellow'],
+						[100, 'darkorange'],
+						[1000, 'red']
+					];
+				} else if (curr_datatype_metric == "deaths") {
+					legend_stops = [
+						[0, 'darkgray'],
+						[1, 'green'],
+						[5, 'yellow'],
+						[10, 'darkorange'],
+						[100, 'red']
+					];
+				}
 			}
-		} else if (curr_datatype_type == "daily"){
-			if (curr_datatype_metric == "cases"){
-				legend_stops = [
-					[0, 'darkgray'],
-					[1, 'green'],
-					[10, 'yellow'],
-					[100, 'darkorange'],
-					[1000, 'red']
-				];
-			} else if (curr_datatype_metric == "deaths") {
-				legend_stops = [
-					[0, 'darkgray'],
-					[1, 'green'],
-					[5, 'yellow'],
-					[10, 'darkorange'],
-					[100, 'red']
-				];
+		} else if (curr_data_level == "state"){
+			if (curr_datatype_type == "current"){
+				if (curr_datatype_metric == "cases"){
+					legend_stops = [
+						[0, 'darkgray'],
+						[5000, 'green'],
+						[10000, 'yellow'],
+						[50000, 'darkorange'],
+						[100000, 'red']
+					];
+				} else if (curr_datatype_metric == "deaths") {
+					legend_stops = [
+						[0, 'darkgray'],
+						[500, 'green'],
+						[1000, 'yellow'],
+						[5000, 'darkorange'],
+						[10000, 'red']
+					];
+				}
+			} else if (curr_datatype_type == "daily"){
+				if (curr_datatype_metric == "cases"){
+					legend_stops = [
+						[0, 'darkgray'],
+						[500, 'green'],
+						[1000, 'yellow'],
+						[5000, 'darkorange'],
+						[10000, 'red']
+					];
+				} else if (curr_datatype_metric == "deaths") {
+					legend_stops = [
+						[0, 'darkgray'],
+						[50, 'green'],
+						[100, 'yellow'],
+						[500, 'darkorange'],
+						[1000, 'red']
+					];
+				}
 			}
 		}
 
@@ -396,7 +520,17 @@ $(document).ready(function($) {
 		var curr_date_id = curr_date.toISOString().split('T')[0].replace(/-/g, "")
 		var curr_datatype_metric = $("input.rb_dataopt_metric:checked").val();
 		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
-		var county_data = $active_county_prop;
+		var curr_data_level = $("input.rb_data_level:checked").val();
+
+
+		if (curr_data_level == "county"){
+			var curr_data = $active_county_prop
+			$('#tooltip_header_name').text(curr_data["NAMELSAD"] + ", " + curr_data["state_abbr"])
+		} else if (curr_data_level == "state"){
+			var curr_data = $active_state_prop;
+			$('#tooltip_header_name').text(curr_data["NAME"])
+		};
+		$('#tooltip_header_date').text(format_date(curr_date))
 
 		// get data based on selections
 		if (curr_datatype_type == "daily"){
@@ -406,10 +540,7 @@ $(document).ready(function($) {
 			var type_lookup = "_";
 			$('#tooltip_header_type').text("Current Metrics: ")
 		};
-
-		// update headers
-		$('#tooltip_header_name').text(county_data["NAMELSAD"] + ", " + county_data["state_abbr"])
-		$('#tooltip_header_date').text(format_date(curr_date))
+		
 
 		// create row for each displayed prop
 		var displayed_properties = ["cases" + type_lookup + curr_date_id, "deaths" + type_lookup + curr_date_id]
@@ -421,7 +552,7 @@ $(document).ready(function($) {
 			append_string = ""
 			append_string = "<tr class='tooltip_data_row'>"
 			append_string = append_string + "<td class='tooltip_data_label'>" + label_text + "</td>"
-			append_string = append_string + "<td class='tooltip_data_val'>" + $.number(county_data[prop]) + "</td>"
+			append_string = append_string + "<td class='tooltip_data_val'>" + $.number(curr_data[prop]) + "</td>"
 			append_string = append_string + "</tr>"
 
 			$tooltip_body.append(append_string);
@@ -958,6 +1089,9 @@ $(document).ready(function($) {
 	// highlight shape
 	function toggle_highlight_shp(county_index, bool_active){
 		map.setFeatureState({source: 'us_counties', id: county_index}, { hover: bool_active });
+	};
+	function toggle_highlight_shp_st(state_index, bool_active){
+		map.setFeatureState({source: 'us_states', id: state_index}, { hover: bool_active });
 	};
 
 	function format_date(raw_date){

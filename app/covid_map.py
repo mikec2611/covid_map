@@ -12,6 +12,7 @@ app_rel_path = "C:/programming/covid_map"
 
 def get_data_covid():
 	debug_msg("run get_data_covid")
+	# county
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
 						    dtype={'fips': 'str'}
 							)
@@ -25,10 +26,14 @@ def get_data_covid():
 	# NYC = 10001
 	# KS MO = 64101
 
+	# state
 	df_state = pd.read_csv('https://raw.github.com/nytimes/covid-19-data//master/us-states.csv',
 						    dtype={'fips': 'str'}
 						  )
+	df_state["date_id"] = df_state["date"].str.replace('-','')
+	df_state = df_state.loc[df_state["date_id"].astype(int) >= 20200315]
 
+	# total
 	df_total = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us.csv')
 	df_total["date_id"] = df_total["date"].str.replace('-','')
 	df_total = df_total.loc[df_total["date_id"].astype(int) >= 20200315]
@@ -76,6 +81,7 @@ def run_process(get_data_flag):
 
 	total_path = app_rel_path + '/app/static/data/data_total.csv'
 	county_path = app_rel_path + '/app/static/data/data_county.csv'
+	state_path = app_rel_path + '/app/static/data/data_state.csv'
 	unique_county_path = app_rel_path + '/app/static/data/unique_county.csv'
 	geodata_county_path = app_rel_path + '/app/static/data/geodata_county.json'
 	geodata_state_path = app_rel_path + '/app/static/data/geodata_state.json'
@@ -83,7 +89,7 @@ def run_process(get_data_flag):
 	if get_data_flag == True:
 		debug_msg("loading new data")
 		# data_county, geodata_county, data_pop = get_data()
-		data_total, df_state, data_county, geodata_state, geodata_county = get_data()
+		data_total, data_state, data_county, geodata_state, geodata_county = get_data()
 
 		# get list of dates in data
 		date_list = data_county["date_id"].unique().tolist()
@@ -113,14 +119,15 @@ def run_process(get_data_flag):
 			geodata_total["casesPD_" + date_list[total_index]] = total_cases_PD
 			geodata_total["deathsPD_" + date_list[total_index]] = total_deaths_PD
 
-		#MCDEV -- populate state metrics eventually
 		# get state lookups and remove unmapped shapes in statefile
-		debug_msg("getting state information")
+		debug_msg("getting state information & populating features")
 		unique_state = []
 		state_names = []
 		saved_features = []
+		state_ctr = 0
 		for feature in geodata_state["features"]:
 			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]:
+				feature["id"] = state_ctr
 				state_id = feature["properties"]["STATEFP"]
 				state_name = feature["properties"]["NAME"]
 				state_abbr = feature["properties"]["STUSPS"]
@@ -128,7 +135,41 @@ def run_process(get_data_flag):
 					unique_state.append(state_id)
 					state_names.append([state_id, state_name, state_abbr])
 
+				st_covid_data = data_state[data_state["state"] == state_name]
+				if not st_covid_data.empty:
+					prior_cases = 0
+					prior_deaths = 0
+					for date_val in date_list:
+						date_data = st_covid_data.loc[st_covid_data["date_id"] == date_val]
+						if not date_data.empty:
+							date_cases = date_data["cases"].values[0].astype("float")
+							date_deaths = date_data["deaths"].values[0].astype("float")
+							date_casesPD = date_cases - prior_cases
+							date_deathsPD = date_deaths - prior_deaths
+							if date_casesPD < 0:
+								date_casesPD = 0
+							if date_deathsPD < 0:
+								date_deathsPD = 0
+
+							feature["properties"]["cases_" + date_val] = date_cases
+							feature["properties"]["deaths_" + date_val] = date_deaths
+
+							feature["properties"]["casesPD_" + date_val] = date_casesPD
+							feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+
+							if date_cases > 0:
+								prior_cases = date_cases
+							if date_deaths > 0:
+								prior_deaths = date_deaths
+
+							# # deciles
+							# date_cases_decile = date_data["cases_decile"].values[0].astype("float")
+							# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
+							# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
+							# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+
 				saved_features.append(feature)
+				state_ctr+=1
 		df_state_names = pd.DataFrame(state_names, columns=["state_id", "state_name", "state_abbr"])
 
 		geodata_state["features"] = saved_features
@@ -145,7 +186,7 @@ def run_process(get_data_flag):
 		data_county = data_county_total
 
 		# add properties to each county geojson with covid data
-		debug_msg("populating features")
+		debug_msg("populating county features")
 		curr_county = ""
 		unique_counties = []
 		saved_features = []
@@ -210,6 +251,7 @@ def run_process(get_data_flag):
 		debug_msg("saving data")
 		# save data
 		data_county.to_csv(county_path)
+		data_state.to_csv(state_path)
 		unique_counties.to_csv(unique_county_path, header=True)
 
 		#save total data
@@ -231,8 +273,9 @@ def run_process(get_data_flag):
 	else:
 		debug_msg("loading locally")
 
-		# load county data
+		# load data
 		data_county = pd.read_csv(county_path)
+		data_state = pd.read_csv(state_path)
 		date_list = data_county["date_id"].astype(str).unique().tolist()
 		unique_counties = pd.read_csv(unique_county_path)
 		unique_counties = unique_counties.values.tolist()

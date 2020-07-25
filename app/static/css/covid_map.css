@@ -255,6 +255,7 @@ body{
     height:32%;
     left: 1.5%;
     top: 5.5%;
+    min-width:445px;
     color:white;
     z-index: 1100;
     table-layout: fixed;
@@ -534,4 +535,17 @@ a:visited{
 	color:orange;
 }
 
-
+#data_level_toggle{
+	display: table;
+    top: 5.5%;
+    left: 45%;
+    width: 10%;
+    min-width:150px;
+    position: absolute;
+    z-index: 1110;
+    color: white;
+    display:none;
+}
+input.rb_data_level{
+	cursor:pointer;
+}
