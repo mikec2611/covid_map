@@ -548,4 +548,8 @@ a:visited{
 }
 input.rb_data_level{
 	cursor:pointer;
+	margin-right:7.5px;
+}
+td.data_level_box{
+	text-align: center;
 }
