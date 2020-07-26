@@ -27,7 +27,7 @@ $(document).ready(function($) {
 	// console.log(unique_county)
 	// console.log(date_list)
 	// console.log(geodata_county)
-	console.log(geodata_state)
+	// console.log(geodata_state)
 	// console.log(data_total)
 
 	//cache commonly used elements
@@ -240,7 +240,7 @@ $(document).ready(function($) {
 		});
 		
 		// start app
-		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart, #data_level_county').trigger('change');
+		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart, #data_level_state').trigger('change');
 		$('#dataopt_cases, #dataopt_current, #dataopt_daily_chart, #dataopt_cases_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()

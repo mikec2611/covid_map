@@ -168,6 +168,16 @@ def run_process(get_data_flag):
 							# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
 							# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
 
+				del feature["properties"]["ALAND"]
+				del feature["properties"]["AWATER"]
+				del feature["properties"]["DIVISION"]
+				del feature["properties"]["FUNCSTAT"]
+				del feature["properties"]["INTPTLAT"]
+				del feature["properties"]["INTPTLON"]
+				del feature["properties"]["LSAD"]
+				del feature["properties"]["MTFCC"]
+				del feature["properties"]["REGION"]
+				del feature["properties"]["STATENS"]
 				saved_features.append(feature)
 				state_ctr+=1
 		df_state_names = pd.DataFrame(state_names, columns=["state_id", "state_name", "state_abbr"])
@@ -240,6 +250,19 @@ def run_process(get_data_flag):
 							feature["properties"]["cases_decile_" + date_val] = date_cases_decile
 							feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
 
+				del feature["properties"]["ALAND"]
+				del feature["properties"]["AWATER"]
+				del feature["properties"]["CBSAFP"]
+				del feature["properties"]["CLASSFP"]
+				del feature["properties"]["COUNTYFP"]
+				del feature["properties"]["COUNTYNS"]
+				del feature["properties"]["CSAFP"]
+				del feature["properties"]["FUNCSTAT"]
+				del feature["properties"]["INTPTLAT"]
+				del feature["properties"]["INTPTLON"]
+				del feature["properties"]["LSAD"]
+				del feature["properties"]["METDIVFP"]
+				del feature["properties"]["MTFCC"]
 				saved_features.append(feature)
 				county_ctr+=1
 		geodata_county["features"] = saved_features # removes shapes that arent displayed
