@@ -37,7 +37,7 @@
 
 	</head>
 	<body>
-		<h1 style="display:none">Interactive map vizualizing Covid-19 data by county in the United States. Includes current and daily reported cases and deaths in map and chart form. Hover over the heatmap to view coronavirus statistics for that county. Click a county to show the line and bar charts graphing covid 19 cases and deaths by U.S. county. View trends over time using the slider which updates the map visual automatically. Data refreshed daily using automated scripts.</h1>
+		<h1 style="display:none">Interactive map vizualizing Covid-19 data by county and state in the United States. Includes current and daily reported cases and deaths in map and chart form. Hover over the heatmap to view coronavirus statistics for that county or state. Click a county or state to show the line and bar charts graphing covid 19 cases and deaths by U.S. county or state. View trends over time using the slider which updates the map visual automatically. Data refreshed daily using automated scripts.</h1>
 		<!-- app shader-->
 		<div id="app_shader"></div>
 
@@ -106,6 +106,14 @@
 					</td>
 					<td class="data_level_box" id="data_level_1">
 						<input id="data_level_county" class="rb_data_level" type="radio" name="data_level_toggle" value="county">County</input>
+					</td>
+				</tr>
+				<tr>
+					<td class="data_level_box" id="data_level_pop_1">
+						<input id="data_level_pop" class="rb_data_pop_level" type="radio" name="data_level_pop_toggle" value="population" checked="checked">Per 100k</input>
+					</td>
+					<td class="data_level_box" id="data_level_pop_2">
+						<input id="data_level_base" class="rb_data_pop_level" type="radio" name="data_level_pop_toggle" value="base">Base</input>
 					</td>
 				</tr>
 			</tbody>

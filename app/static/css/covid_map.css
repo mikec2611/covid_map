@@ -540,16 +540,16 @@ a:visited{
     top: 5.5%;
     left: 45%;
     width: 10%;
-    min-width:150px;
+    min-width:180px;
     position: absolute;
     z-index: 1110;
     color: white;
     display:none;
 }
-input.rb_data_level{
+input.rb_data_level, input.rb_data_pop_level{
 	cursor:pointer;
 	margin-right:7.5px;
 }
 td.data_level_box{
-	text-align: center;
+	text-align: left;
 }

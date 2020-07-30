@@ -109,6 +109,11 @@ $(document).ready(function($) {
 			'type': 'geojson',
 			'data': geodata_state
 		});
+		map.addSource('us_states_pop', {
+			'type': 'geojson',
+			'data': geodata_state_pop
+		});
+
 
 		// add county layer
 		map.addLayer({
@@ -148,6 +153,26 @@ $(document).ready(function($) {
 									],
 			}
 		});
+		// add state_pop fill layer
+		map.addLayer({
+			'id': 'us_states_pop_fill',
+			'type': 'fill',
+			'source': 'us_states_pop',
+			// 'layout': {},
+			'paint': {
+				'fill-opacity': ['case',
+									['boolean', ['feature-state', 'hover'], false],
+				 					0.85,
+									0.55
+	            				],
+				'fill-outline-color': ['case',
+										['boolean', ['feature-state', 'clicked'], false],
+										 'cyan',
+										 'black'
+									],
+			}
+		});
+
 		// add state line layer
 		map.addLayer({
 			'id': 'us_states',
@@ -176,8 +201,21 @@ $(document).ready(function($) {
 			};
 		});
 
-		// events when click on us_states_fill layer. show county info
+		// events when click on us_states_fill layer. show state info
 		map.on('click', 'us_states_fill', function(e) {
+			event_shp = e.features[0]
+			if ($selected_state.id != event_shp.id){
+				// if ($selected_county != ""){
+				// 	toggle_highlight_shp($selected_county.id, false)
+				// };
+
+				$selected_state = event_shp
+				$selected_state_prop = event_shp.properties
+				// toggle_highlight_shp(event_shp.id, true)
+				show_county_info('state')
+			};
+		});
+		map.on('click', 'us_states_pop_fill', function(e) {
 			event_shp = e.features[0]
 			if ($selected_state.id != event_shp.id){
 				// if ($selected_county != ""){
@@ -230,6 +268,19 @@ $(document).ready(function($) {
 				update_tooltip()
 			};
 		});
+		map.on('mousemove', 'us_states_pop_fill', function(e) {
+			event_shp = e.features[0]
+			if ($active_state.id != event_shp.id){
+				if ($active_state != ""){
+					toggle_highlight_shp_st($active_state.id, false)
+				};
+
+				$active_state = event_shp
+				$active_state_prop = event_shp.properties
+				toggle_highlight_shp_st(event_shp.id, true)
+				update_tooltip()
+			};
+		});
 
 		// events when mouse leaves us_states_fill layer. hide tooltip
 		map.on('mouseleave', 'us_states_fill', function(e) {
@@ -240,9 +291,17 @@ $(document).ready(function($) {
 			$active_state_prop = ""
 			$tooltip_box.hide() 
 		});
+		map.on('mouseleave', 'us_states_pop_fill', function(e) {
+			if ($active_state != ""){
+				toggle_highlight_shp_st($active_state.id, false)
+			};
+			$active_state = ""
+			$active_state_prop = ""
+			$tooltip_box.hide() 
+		});
 		
 		// start app
-		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart, #data_level_state').trigger('change');
+		$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart, #data_level_state, #data_level_pop').trigger('change');
 		$('#dataopt_cases, #dataopt_current, #dataopt_daily_chart, #dataopt_cases_chart').trigger('change');
 		update_map(last_date_sld / 1000);
 		$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
@@ -341,6 +400,15 @@ $(document).ready(function($) {
 		$("input.rb_data_level").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
 		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 	});
+	// toggle between base and per X persons view
+	$("input.rb_data_pop_level").change(function(){
+		update_map($date_slider.slider("option","value"));
+		toggle_ci_box(false);
+
+		// color radiobutton choices
+		$("input.rb_data_pop_level").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+		$(this).parent().css({'color': 'greenyellow', 'font-weight': 'bold'});
+	});
 
 	// ---functions
 
@@ -352,12 +420,13 @@ $(document).ready(function($) {
 		var curr_datatype_metric = $("input.rb_dataopt_metric:checked").val();
 		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
 		var curr_data_level = $("input.rb_data_level:checked").val();
+		var curr_data_pop_level = $("input.rb_data_pop_level:checked").val();
 		if (curr_datatype_type == "daily"){
 			var curr_lookup = curr_datatype_metric + "PD_" + curr_date_id.replace(/-/g, "")	;
 		} else if (curr_datatype_type == "current"){
 			var curr_lookup = curr_datatype_metric + "_" + curr_date_id.replace(/-/g, "");
 		};
-		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type, curr_data_level)
+		var legend_stops = calc_legend_stops(curr_datatype_metric, curr_datatype_type, curr_data_level, curr_data_pop_level)
 
 
 		// curr_lookup = curr_datatype_metric + "_decile_" + curr_date_id.replace(/-/g, "");
@@ -375,6 +444,7 @@ $(document).ready(function($) {
 				stops: legend_stops
 			});
 			map.setLayoutProperty('us_counties', 'visibility', 'visible');
+			map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
 			map.setLayoutProperty('us_states_fill', 'visibility', 'none');
 		} else if (curr_data_level == "state"){
 			map.setPaintProperty('us_states_fill', 'fill-color', {
@@ -382,7 +452,13 @@ $(document).ready(function($) {
 				stops: legend_stops
 			});
 			map.setLayoutProperty('us_counties', 'visibility', 'none');
-			map.setLayoutProperty('us_states_fill', 'visibility', 'visible');
+			if (curr_data_pop_level == "base"){
+				map.setLayoutProperty('us_states_fill', 'visibility', 'visible');
+				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
+			} else if (curr_data_pop_level == "population"){
+				map.setLayoutProperty('us_states_fill', 'visibility', 'none');
+				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'visible');
+			}
 		};
 
 
@@ -395,7 +471,7 @@ $(document).ready(function($) {
 	};
 
 	// calculate which legend stops to use
-	function calc_legend_stops(curr_datatype_metric, curr_datatype_type, curr_data_level ){
+	function calc_legend_stops(curr_datatype_metric, curr_datatype_type, curr_data_level, curr_data_pop_level){
 		if (curr_data_level == "county"){
 			if (curr_datatype_type == "current"){
 				if (curr_datatype_metric == "cases"){
@@ -528,7 +604,7 @@ $(document).ready(function($) {
 		var curr_datatype_metric = $("input.rb_dataopt_metric:checked").val();
 		var curr_datatype_type = $("input.rb_dataopt_type:checked").val();
 		var curr_data_level = $("input.rb_data_level:checked").val();
-
+		var curr_data_pop_level = $("input.rb_data_pop_level:checked").val();
 
 		if (curr_data_level == "county"){
 			var curr_data = $active_county_prop
@@ -551,7 +627,13 @@ $(document).ready(function($) {
 
 		// create row for each displayed prop
 		var displayed_properties = ["cases" + type_lookup + curr_date_id, "deaths" + type_lookup + curr_date_id]
-		var label_display = [" Reported Cases", "Reported Deaths"]
+
+		if (curr_data_pop_level == "base"){
+			var label_display = [" Reported Cases", "Reported Deaths"]
+		} else if (curr_data_pop_level == "population"){
+			var label_display = [" Reported Cases (per 100k)", "Reported Deaths (per 100k)"]
+		}
+		
 		$("tr.tooltip_data_row").remove()
 		$.each(displayed_properties, function(prop_ind, prop) {
 			label_text = label_display[prop_ind]
@@ -595,6 +677,7 @@ $(document).ready(function($) {
 			var chart_metric = $("input.rb_dataopt_metric_chart:checked").val();
 			var chart_type = $("input.rb_dataopt_type_chart:checked").val();
 			var chart_level = $("input.rb_data_level:checked").val();
+			var chart_pop_level = $("input.rb_data_pop_level:checked").val();
 
 			// destroy existing chart if it exists
 			if (typeof(county_chart) != "undefined"){
@@ -678,6 +761,14 @@ $(document).ready(function($) {
             		},
             	}]
 		};
+
+		if (chart_pop_level == "base"){
+			var chart_pop_label_1 = "Reported Cases"
+			var chart_pop_label_2 = "Reported Deaths"
+		} else if (chart_pop_level == "population"){
+			var chart_pop_label_1 = "Reported Cases (per 100k)"
+			var chart_pop_label_2 = "Reported Deaths (per 100k)"
+		}
 	
 		if (chart_type == "current"){
 			var chardata_type = "line";
@@ -685,13 +776,12 @@ $(document).ready(function($) {
 			if (chart_metric == "cases"){
 				chartdata = [{	
 		        	type: chardata_type,
-		            label: 'Reported Cases',
+		            label: chart_pop_label_1,
 		            data: chart_data[1],
 		            yAxisID: 'cases',
 		            borderColor: chartcolor_2,
 		            fill: false
 		        }]
-
 
 	        	yAxis_options = [{
 			            		id: 'cases',
@@ -705,7 +795,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Cases',
+							        labelString: chart_pop_label_1,
 							        fontColor: "white"
 							    },
 							    gridLines: {
@@ -719,7 +809,7 @@ $(document).ready(function($) {
 			} else if (chart_metric == "deaths"){
 				chartdata = [{	
 					type: chardata_type,
-		            label: 'Reported Deaths',
+		            label: chart_pop_label_2,
 		            data: chart_data[2],
 		            yAxisID: 'deaths',
 		            borderColor: chartcolor_1,
@@ -738,7 +828,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Deaths',
+							        labelString: chart_pop_label_2,
 							        fontColor: "white"
 							    },
 							    gridLines: {
@@ -751,7 +841,7 @@ $(document).ready(function($) {
 			} else if (chart_metric == "both"){
 				chartdata = [{	
 					type: chardata_type,
-		            label: 'Reported Deaths',
+		            label: chart_pop_label_2,
 		            data: chart_data[2],
 		            yAxisID: 'deaths',
 		            borderColor: chartcolor_1,
@@ -759,7 +849,7 @@ $(document).ready(function($) {
 		        },
 		        {	
 		        	type: chardata_type,
-		            label: 'Reported Cases',
+		            label: chart_pop_label_1,
 		            data: chart_data[1],
 		            yAxisID: 'cases',
 		            borderColor: chartcolor_2,
@@ -778,7 +868,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Cases',
+							        labelString: chart_pop_label_1,
 							        fontColor: "white"
 							    },
 							    gridLines: {
@@ -799,7 +889,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Deaths',
+							        labelString: chart_pop_label_2,
 							        fontColor: "white"
 							    }
 		               	}]
@@ -810,7 +900,7 @@ $(document).ready(function($) {
 	        if (chart_metric == "cases"){
 				chartdata = [{	
 		        	type: chardata_type,
-		            label: 'Reported Cases',
+		            label: chart_pop_label_1,
 		            data: chart_data[3],
 		            yAxisID: 'cases',
 		            borderColor: chartcolor_2,
@@ -829,7 +919,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Cases',
+							        labelString: chart_pop_label_1,
 							        fontColor: "white"
 							    },
 							    gridLines: {
@@ -841,7 +931,7 @@ $(document).ready(function($) {
 			} else if (chart_metric == "deaths"){
 				chartdata = [{		
 					type: chardata_type,	     		
-		            label: 'Reported Deaths',
+		            label: chart_pop_label_2,
 		            data: chart_data[4],
 		            yAxisID: 'deaths',
 		            borderColor: chartcolor_1,
@@ -860,7 +950,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Deaths',
+							        labelString: chart_pop_label_2,
 							        fontColor: "white"
 							    },
 							    gridLines: {
@@ -872,7 +962,7 @@ $(document).ready(function($) {
 			} else if (chart_metric == "both"){
 				chartdata = [{		
 					type: chardata_type,	     		
-		            label: 'Reported Deaths',
+		            label: chart_pop_label_2,
 		            data: chart_data[4],
 		            yAxisID: 'deaths',
 		            borderColor: chartcolor_1,
@@ -880,7 +970,7 @@ $(document).ready(function($) {
 		        },
 		        {	
 		        	type: chardata_type,
-		            label: 'Reported Cases',
+		            label: chart_pop_label_1,
 		            data: chart_data[3],
 		            yAxisID: 'cases',
 		            borderColor: chartcolor_2,
@@ -899,7 +989,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Cases',
+							        labelString: chart_pop_label_1,
 							        fontColor: "white"
 							    },
 							    gridLines: {
@@ -920,7 +1010,7 @@ $(document).ready(function($) {
 		                		},
 		                		scaleLabel: {
 							        display: true,
-							        labelString: 'Reported Deaths',
+							        labelString: chart_pop_label_2,
 							        fontColor: "white"
 							    }
 		               	}]

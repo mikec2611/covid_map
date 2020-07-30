@@ -84,7 +84,7 @@ def get_data():
 def run_process(get_data_flag):
 	debug_msg("run run_process")
 
-	pop_denom = 1000
+	pop_denom = 100000
 	total_path = app_rel_path + '/app/static/data/data_total.csv'
 	county_path = app_rel_path + '/app/static/data/data_county.csv'
 	state_path = app_rel_path + '/app/static/data/data_state.csv'
