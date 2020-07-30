@@ -30,6 +30,7 @@
 			var unique_county = {{ unique_county|tojson }}
 			var geodata_county = {{ geodata_county|tojson }}
 			var geodata_state = {{ geodata_state|tojson }}
+			var geodata_state_pop = {{ geodata_state_pop|tojson }}
 			var date_list = {{ date_list|tojson }}
 			var data_total = {{ data_total|tojson }}
 		</script>
@@ -43,7 +44,7 @@
 		<!-- top bar-->
 		<div id="top_bar" class="control_box">
 			<div id="btn_info" class="top_bar_section"><i class="fas fa-info-circle"></i></div>
-			<div id="page_title" class="top_bar_section">Covid-19 US County Map</div>
+			<div id="page_title" class="top_bar_section">U.S. Covid-19 Map</div>
 			<div id="data_update" class="top_bar_section">Data Range: <span id="data_update_val"></span></div>
 			<div id="top_bar_spacer" class="top_bar_section"></div>
 		</div>
@@ -52,7 +53,7 @@
 		<table id="app_info_box" class="control_box">
 			<thead>
 				<tr>
-					<th id="ai_version" class="ai_header1"> Version 1.0</th>
+					<th id="ai_version" class="ai_header1"></th>
 					<th id="ai_close" class="ai_header1"><i class="far fa-window-close"></i></th>
 				</tr>
 				<tr>

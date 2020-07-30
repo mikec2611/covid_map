@@ -28,7 +28,9 @@ $(document).ready(function($) {
 	// console.log(date_list)
 	// console.log(geodata_county)
 	// console.log(geodata_state)
+	console.log(geodata_state_pop)
 	// console.log(data_total)
+
 
 	//cache commonly used elements
 	var $date_slider = $("#date_slider")

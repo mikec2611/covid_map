@@ -16,6 +16,7 @@ def get_data_covid():
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
 						    dtype={'fips': 'str'}
 							)
+	
 	df_county.loc[df_county["county"] == "New York City", "fips"] = "36061"
 	df_county.columns = ["date","county","state","fips","cases","deaths"]
 	df_county["date_id"] = df_county["date"].str.replace('-','')
@@ -58,41 +59,50 @@ def get_data_geo():
 def get_data_pop():
 	debug_msg("run get_data_pop")
 
-	data_pop_path = app_rel_path +'/app/static/data/pop-by-zip-code.csv'
-	data_pop = pd.read_csv(data_pop_path, dtype={'zip_code': 'str'})
-	data_pop = data_pop.sort_values(by=['zip_code'])
-	data_pop.columns = ["zip_code","population"]
+	# counties
+	data_pop_path_county = app_rel_path +'/app/static/data/population_county.csv'
+	data_pop_county = pd.read_csv(data_pop_path_county)
 
-	return data_pop
+	# states
+	data_pop_path_state = app_rel_path +'/app/static/data/population_state.csv'
+	data_pop_state = pd.read_csv(data_pop_path_state)
+
+	return data_pop_county, data_pop_state
 
 def get_data():
 	debug_msg("run get_data")
 
 	df_total, df_state, df_county  = get_data_covid()
 	geodata_state, geodata_county = get_data_geo()
-	# data_pop = get_data_pop()
+	geodata_state_pop, geodata_county_pop = get_data_geo()
+	data_pop_county, data_pop_state = get_data_pop()
 
-	return df_total, df_state, df_county, geodata_state, geodata_county #, data_pop
+	return df_total, df_state, df_county, geodata_state, geodata_county, geodata_state_pop, geodata_county_pop, data_pop_county, data_pop_state
 
 
 # run full process
 def run_process(get_data_flag):
 	debug_msg("run run_process")
 
+	pop_denom = 1000
 	total_path = app_rel_path + '/app/static/data/data_total.csv'
 	county_path = app_rel_path + '/app/static/data/data_county.csv'
 	state_path = app_rel_path + '/app/static/data/data_state.csv'
 	unique_county_path = app_rel_path + '/app/static/data/unique_county.csv'
 	geodata_county_path = app_rel_path + '/app/static/data/geodata_county.json'
 	geodata_state_path = app_rel_path + '/app/static/data/geodata_state.json'
+	geodata_county_pop_path = app_rel_path + '/app/static/data/geodata_pop_county.json'
+	geodata_state_pop_path = app_rel_path + '/app/static/data/geodata_pop_state.json'
 
 	if get_data_flag == True:
 		debug_msg("loading new data")
 		# data_county, geodata_county, data_pop = get_data()
-		data_total, data_state, data_county, geodata_state, geodata_county = get_data()
+		data_total, data_state, data_county, geodata_state, geodata_county, geodata_state_pop, geodata_county_pop, data_pop_county, data_pop_state = get_data()
 
 		# get list of dates in data
 		date_list = data_county["date_id"].unique().tolist()
+
+		#--------total data processing
 
 		#calc total metrics
 		geodata_total= {}
@@ -119,8 +129,10 @@ def run_process(get_data_flag):
 			geodata_total["casesPD_" + date_list[total_index]] = total_cases_PD
 			geodata_total["deathsPD_" + date_list[total_index]] = total_deaths_PD
 
-		# get state lookups and remove unmapped shapes in statefile
-		debug_msg("getting state information & populating features")
+		#--------state data processing
+
+		# populate state data - base
+		debug_msg("populate state data - base")
 		unique_state = []
 		state_names = []
 		saved_features = []
@@ -142,7 +154,7 @@ def run_process(get_data_flag):
 					for date_val in date_list:
 						date_data = st_covid_data.loc[st_covid_data["date_id"] == date_val]
 						if not date_data.empty:
-							date_cases = date_data["cases"].values[0].astype("float")
+							date_cases = date_data["cases"].values[0].astype("float") 
 							date_deaths = date_data["deaths"].values[0].astype("float")
 							date_casesPD = date_cases - prior_cases
 							date_deathsPD = date_deaths - prior_deaths
@@ -181,8 +193,71 @@ def run_process(get_data_flag):
 				saved_features.append(feature)
 				state_ctr+=1
 		df_state_names = pd.DataFrame(state_names, columns=["state_id", "state_name", "state_abbr"])
-
 		geodata_state["features"] = saved_features
+
+
+		# populate state data - pop
+		debug_msg("populate state data - pop")
+		saved_features = []
+		state_ctr = 0
+		for feature in geodata_state_pop["features"]:
+			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]:
+				feature["id"] = state_ctr
+				state_id = feature["properties"]["STATEFP"]
+				state_name = feature["properties"]["NAME"]
+				state_abbr = feature["properties"]["STUSPS"]
+				st_covid_data = data_state[data_state["state"] == state_name]
+				if not st_covid_data.empty:
+					prior_cases = 0
+					prior_deaths = 0
+					for date_val in date_list:
+						date_data = st_covid_data.loc[st_covid_data["date_id"] == date_val]
+						if not date_data.empty:
+							pop_data = data_pop_state.loc[data_pop_state["STNAME"] == state_name]
+							if not pop_data.empty:
+								date_cases = round((date_data["cases"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
+								date_deaths = round((date_data["deaths"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
+								date_casesPD = date_cases - prior_cases
+								date_deathsPD = date_deaths - prior_deaths
+								if date_casesPD < 0:
+									date_casesPD = 0
+								if date_deathsPD < 0:
+									date_deathsPD = 0
+
+								feature["properties"]["cases_" + date_val] = date_cases
+								feature["properties"]["deaths_" + date_val] = date_deaths
+
+								feature["properties"]["casesPD_" + date_val] = date_casesPD
+								feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+
+								if date_cases > 0:
+									prior_cases = date_cases
+								if date_deaths > 0:
+									prior_deaths = date_deaths
+
+								# # deciles
+								# date_cases_decile = date_data["cases_decile"].values[0].astype("float")
+								# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
+								# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
+								# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+
+				del feature["properties"]["ALAND"]
+				del feature["properties"]["AWATER"]
+				del feature["properties"]["DIVISION"]
+				del feature["properties"]["FUNCSTAT"]
+				del feature["properties"]["INTPTLAT"]
+				del feature["properties"]["INTPTLON"]
+				del feature["properties"]["LSAD"]
+				del feature["properties"]["MTFCC"]
+				del feature["properties"]["REGION"]
+				del feature["properties"]["STATENS"]
+				saved_features.append(feature)
+				state_ctr+=1
+		
+		geodata_state_pop["features"] = saved_features
+
+
+		#--------county data processing
 
 		# calculate deciles for map coloring
 		data_county_total = pd.DataFrame()
@@ -281,13 +356,15 @@ def run_process(get_data_flag):
 		with open(total_path, 'w') as f:
 			dump(geodata_total, f)
 
-		# save county shapes
+		# save county data
 		with open(geodata_county_path, 'w') as f:
 			dump(geodata_county, f)			
 
-		# save state shapes
+		# save state data
 		with open(geodata_state_path, 'w') as f:
 			dump(geodata_state, f)
+		with open(geodata_state_pop_path, 'w') as f:
+			dump(geodata_state_pop, f)
 
 		# prep total data
 		data_total = data_total.to_dict('records')
@@ -307,15 +384,17 @@ def run_process(get_data_flag):
 		with open(total_path) as f:
 			geodata_total = json.load(f)
 
-		# load county shapes
+		# load county data
 		with open(geodata_county_path) as f:
 			geodata_county = json.load(f)
 
-		# load state shapes
+		# load state data
 		with open(geodata_state_path) as f:
 			geodata_state = json.load(f)
+		with open(geodata_state_pop_path) as f:
+			geodata_state_pop = json.load(f)
 
-		return geodata_county, geodata_state, date_list, unique_counties, geodata_total
+		return geodata_county, geodata_state, geodata_state_pop, date_list, unique_counties, geodata_total
 
 
 def debug_msg(msg):
