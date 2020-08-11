@@ -195,7 +195,6 @@ def run_process(get_data_flag):
 		df_state_names = pd.DataFrame(state_names, columns=["state_id", "state_name", "state_abbr"])
 		geodata_state["features"] = saved_features
 
-
 		# populate state data - pop
 		debug_msg("populate state data - pop")
 		saved_features = []
@@ -271,7 +270,7 @@ def run_process(get_data_flag):
 		data_county = data_county_total
 
 		# add properties to each county geojson with covid data
-		debug_msg("populating county features")
+		debug_msg("populate county data - base")
 		curr_county = ""
 		unique_counties = []
 		saved_features = []
@@ -346,6 +345,84 @@ def run_process(get_data_flag):
 		unique_counties = unique_counties.sort_values(["county_state", "county_name"], ascending = (True, True))
 		unique_counties = unique_counties["full_county_name"]
 
+
+		# add properties to each county geojson with covid data
+		debug_msg("populate county data - pop")
+		curr_county = ""
+		saved_features = []
+		county_ctr = 0
+		for feature in geodata_county_pop["features"]:	
+			if feature["properties"]["STATEFP"] not in ["60","66","69","72","78"]: # exclude untracked statefps
+
+				# set values in feature
+				feature["id"] = county_ctr
+				feature["properties"]["state_name"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_name"].values[0]
+				feature["properties"]["state_abbr"] = df_state_names.loc[df_state_names["state_id"] == feature["properties"]["STATEFP"]]["state_abbr"].values[0]
+
+				# # get unique list of counties for frontend
+				# full_county_name = feature["properties"]["NAMELSAD"] + ", " + feature["properties"]["state_abbr"]
+				# if full_county_name != curr_county: # get unique list of counties
+				# 	unique_counties.append([full_county_name, feature["properties"]["NAMELSAD"], feature["properties"]["state_abbr"]])
+				# 	curr_county = full_county_name
+
+				# populate data in feature
+				county_name = feature["properties"]["NAMELSAD"]
+				state_name = feature["properties"]["state_name"]
+				geo_county_fips = feature["properties"]["GEOID"]
+				fips_data = data_county.loc[data_county["fips"] == geo_county_fips]
+				if not fips_data.empty:
+					prior_cases = 0
+					prior_deaths = 0
+					for date_val in date_list:
+						date_data = fips_data.loc[fips_data["date_id"] == date_val]
+						if not date_data.empty:
+							pop_data_st = data_pop_county.loc[data_pop_county["STNAME"] == state_name]
+							pop_data = pop_data_st.loc[pop_data_st["CTYNAME"] == county_name]
+							if not pop_data.empty:
+								date_cases = round((date_data["cases"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
+								date_cases = round((date_data["cases"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
+								date_deaths = date_data["deaths"].values[0].astype("float")
+								date_casesPD = date_cases - prior_cases
+								date_deathsPD = date_deaths - prior_deaths
+								if date_casesPD < 0:
+									date_casesPD = 0
+								if date_deathsPD < 0:
+									date_deathsPD = 0
+
+								feature["properties"]["cases_" + date_val] = date_cases
+								feature["properties"]["deaths_" + date_val] = date_deaths
+
+								feature["properties"]["casesPD_" + date_val] = date_casesPD
+								feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+
+								if date_cases > 0:
+									prior_cases = date_cases
+								if date_deaths > 0:
+									prior_deaths = date_deaths
+
+								# deciles
+								date_cases_decile = date_data["cases_decile"].values[0].astype("float")
+								date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
+								feature["properties"]["cases_decile_" + date_val] = date_cases_decile
+								feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+
+				del feature["properties"]["ALAND"]
+				del feature["properties"]["AWATER"]
+				del feature["properties"]["CBSAFP"]
+				del feature["properties"]["CLASSFP"]
+				del feature["properties"]["COUNTYFP"]
+				del feature["properties"]["COUNTYNS"]
+				del feature["properties"]["CSAFP"]
+				del feature["properties"]["FUNCSTAT"]
+				del feature["properties"]["INTPTLAT"]
+				del feature["properties"]["INTPTLON"]
+				del feature["properties"]["LSAD"]
+				del feature["properties"]["METDIVFP"]
+				del feature["properties"]["MTFCC"]
+				saved_features.append(feature)
+				county_ctr+=1
+		geodata_county_pop["features"] = saved_features # removes shapes that arent displayed
+
 		debug_msg("saving data")
 		# save data
 		data_county.to_csv(county_path)
@@ -359,6 +436,8 @@ def run_process(get_data_flag):
 		# save county data
 		with open(geodata_county_path, 'w') as f:
 			dump(geodata_county, f)			
+		with open(geodata_county_pop_path, 'w') as f:
+			dump(geodata_county_pop, f)
 
 		# save state data
 		with open(geodata_state_path, 'w') as f:
@@ -369,7 +448,7 @@ def run_process(get_data_flag):
 		# prep total data
 		data_total = data_total.to_dict('records')
 
-		return geodata_county, geodata_state, date_list, unique_counties, geodata_total
+		return geodata_county, geodata_county_pop, geodata_state, geodata_state_pop, date_list, unique_counties, geodata_total
 	else:
 		debug_msg("loading locally")
 
@@ -387,6 +466,8 @@ def run_process(get_data_flag):
 		# load county data
 		with open(geodata_county_path) as f:
 			geodata_county = json.load(f)
+		with open(geodata_county_pop_path) as f:
+			geodata_county_pop = json.load(f)
 
 		# load state data
 		with open(geodata_state_path) as f:
@@ -394,7 +475,7 @@ def run_process(get_data_flag):
 		with open(geodata_state_pop_path) as f:
 			geodata_state_pop = json.load(f)
 
-		return geodata_county, geodata_state, geodata_state_pop, date_list, unique_counties, geodata_total
+		return geodata_county, geodata_county_pop, geodata_state, geodata_state_pop, date_list, unique_counties, geodata_total
 
 
 def debug_msg(msg):

@@ -27,8 +27,9 @@ $(document).ready(function($) {
 	// console.log(unique_county)
 	// console.log(date_list)
 	// console.log(geodata_county)
+	console.log(geodata_county_pop)
 	// console.log(geodata_state)
-	console.log(geodata_state_pop)
+	// console.log(geodata_state_pop)
 	// console.log(data_total)
 
 
@@ -105,6 +106,11 @@ $(document).ready(function($) {
 			'type': 'geojson',
 			'data': geodata_county
 		});
+		map.addSource('us_counties_pop', {
+			'type': 'geojson',
+			'data': geodata_county_pop
+		});
+
 		map.addSource('us_states', {
 			'type': 'geojson',
 			'data': geodata_state
@@ -134,6 +140,26 @@ $(document).ready(function($) {
 									],
 			}
 		});
+		// add county_pop fill layer
+		map.addLayer({
+			'id': 'us_counties_pop_fill',
+			'type': 'fill',
+			'source': 'us_counties_pop',
+			// 'layout': {},
+			'paint': {
+				'fill-opacity': ['case',
+									['boolean', ['feature-state', 'hover'], false],
+				 					0.85,
+									0.55
+	            				],
+				'fill-outline-color': ['case',
+										['boolean', ['feature-state', 'clicked'], false],
+										 'cyan',
+										 'black'
+									],
+			}
+		});
+
 		// add state fill layer
 		map.addLayer({
 			'id': 'us_states_fill',
@@ -186,7 +212,7 @@ $(document).ready(function($) {
 			}
 		});
 
-		// events when click on us_counties layer. show county info
+		// events when click on county layers
 		map.on('click', 'us_counties', function(e) {
 			event_shp = e.features[0]
 			if ($selected_county.id != event_shp.id){
@@ -200,8 +226,21 @@ $(document).ready(function($) {
 				show_county_info('county')
 			};
 		});
+		map.on('click', 'us_counties_pop_fill', function(e) {
+			event_shp = e.features[0]
+			if ($selected_county.id != event_shp.id){
+				// if ($selected_county != ""){
+				// 	toggle_highlight_shp($selected_county.id, false)
+				// };
 
-		// events when click on us_states_fill layer. show state info
+				$selected_county = event_shp
+				$selected_county_prop = event_shp.properties
+				// toggle_highlight_shp(event_shp.id, true)
+				show_county_info('county')
+			};
+		});
+
+		// events when click on state layers
 		map.on('click', 'us_states_fill', function(e) {
 			event_shp = e.features[0]
 			if ($selected_state.id != event_shp.id){
@@ -229,7 +268,7 @@ $(document).ready(function($) {
 			};
 		});
 
-		// events when mouse moves on us_counties layer. highlight shape and show tooltip
+		// events when mouse moves on county layers
 		map.on('mousemove', 'us_counties', function(e) {
 			event_shp = e.features[0]
 			if ($active_county.id != event_shp.id){
@@ -243,8 +282,21 @@ $(document).ready(function($) {
 				update_tooltip()
 			};
 		});
+		map.on('mousemove', 'us_counties_pop_fill', function(e) {
+			event_shp = e.features[0]
+			if ($active_county.id != event_shp.id){
+				if ($active_county != ""){
+					toggle_highlight_shp($active_county.id, false)
+				};
 
-		// events when mouse leaves us_counties layer. hide tooltip
+				$active_county = event_shp
+				$active_county_prop = event_shp.properties
+				toggle_highlight_shp(event_shp.id, true)
+				update_tooltip()
+			};
+		});
+
+		// events when mouse leaves county layers
 		map.on('mouseleave', 'us_counties', function(e) {
 			if ($active_county != ""){
 				toggle_highlight_shp($active_county.id, false)
@@ -253,8 +305,16 @@ $(document).ready(function($) {
 			$active_county_prop = ""
 			$tooltip_box.hide() 
 		});
+		map.on('mouseleave', 'us_counties_pop_fill', function(e) {
+			if ($active_county != ""){
+				toggle_highlight_shp($active_county.id, false)
+			};
+			$active_county = ""
+			$active_county_prop = ""
+			$tooltip_box.hide() 
+		});
 
-		// events when mouse moves on us_states_fill layer. highlight shape and show tooltip
+		// events when mouse moves on states layers
 		map.on('mousemove', 'us_states_fill', function(e) {
 			event_shp = e.features[0]
 			if ($active_state.id != event_shp.id){
@@ -399,6 +459,11 @@ $(document).ready(function($) {
 		// color radiobutton choices
 		$("input.rb_data_level").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
 		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
+
+		$selected_state = ""
+		$selected_state_prop = ""
+		$selected_county = ""
+		$selected_county_prop = ""
 	});
 	// toggle between base and per X persons view
 	$("input.rb_data_pop_level").change(function(){
@@ -408,6 +473,11 @@ $(document).ready(function($) {
 		// color radiobutton choices
 		$("input.rb_data_pop_level").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
 		$(this).parent().css({'color': 'greenyellow', 'font-weight': 'bold'});
+
+		$selected_state = ""
+		$selected_state_prop = ""
+		$selected_county = ""
+		$selected_county_prop = ""
 	});
 
 	// ---functions
@@ -443,15 +513,24 @@ $(document).ready(function($) {
 				property: curr_lookup,
 				stops: legend_stops
 			});
-			map.setLayoutProperty('us_counties', 'visibility', 'visible');
-			map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
+
 			map.setLayoutProperty('us_states_fill', 'visibility', 'none');
+			map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
+			if (curr_data_pop_level == "base"){
+				map.setLayoutProperty('us_counties', 'visibility', 'visible');
+				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'none');
+			} else if (curr_data_pop_level == "population"){
+				map.setLayoutProperty('us_counties', 'visibility', 'none');
+				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'visible');
+			}
 		} else if (curr_data_level == "state"){
 			map.setPaintProperty('us_states_fill', 'fill-color', {
 				property: curr_lookup,
 				stops: legend_stops
 			});
+
 			map.setLayoutProperty('us_counties', 'visibility', 'none');
+			map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'none');
 			if (curr_data_pop_level == "base"){
 				map.setLayoutProperty('us_states_fill', 'visibility', 'visible');
 				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
@@ -475,80 +554,40 @@ $(document).ready(function($) {
 		if (curr_data_level == "county"){
 			if (curr_datatype_type == "current"){
 				if (curr_datatype_metric == "cases"){
-					legend_stops = [
-						[0, 'darkgray'],
-						[10, 'green'],
-						[100, 'yellow'],
-						[1000, 'darkorange'],
-						[10000, 'red']
-					];
+					var stops = [0, 10, 100, 1000, 10000]
 				} else if (curr_datatype_metric == "deaths") {
-					legend_stops = [
-						[0, 'darkgray'],
-						[1, 'green'],
-						[10, 'yellow'],
-						[100, 'darkorange'],
-						[1000, 'red']
-					];
+					var stops = [0, 1, 10, 100, 1000]
 				}
 			} else if (curr_datatype_type == "daily"){
 				if (curr_datatype_metric == "cases"){
-					legend_stops = [
-						[0, 'darkgray'],
-						[1, 'green'],
-						[10, 'yellow'],
-						[100, 'darkorange'],
-						[1000, 'red']
-					];
+					var stops = [0, 1, 10, 100, 1000]
 				} else if (curr_datatype_metric == "deaths") {
-					legend_stops = [
-						[0, 'darkgray'],
-						[1, 'green'],
-						[5, 'yellow'],
-						[10, 'darkorange'],
-						[100, 'red']
-					];
+					var stops = [0, 1, 5, 10, 100]
 				}
 			}
 		} else if (curr_data_level == "state"){
 			if (curr_datatype_type == "current"){
 				if (curr_datatype_metric == "cases"){
-					legend_stops = [
-						[0, 'darkgray'],
-						[5000, 'green'],
-						[10000, 'yellow'],
-						[50000, 'darkorange'],
-						[100000, 'red']
-					];
+					var stops = [0, 5000, 10000, 50000, 100000]
 				} else if (curr_datatype_metric == "deaths") {
-					legend_stops = [
-						[0, 'darkgray'],
-						[500, 'green'],
-						[1000, 'yellow'],
-						[5000, 'darkorange'],
-						[10000, 'red']
-					];
+					var stops = [0, 500, 1000, 5000, 10000]
 				}
 			} else if (curr_datatype_type == "daily"){
 				if (curr_datatype_metric == "cases"){
-					legend_stops = [
-						[0, 'darkgray'],
-						[500, 'green'],
-						[1000, 'yellow'],
-						[5000, 'darkorange'],
-						[10000, 'red']
-					];
+					var stops = [0, 500, 1000, 5000, 10000]
 				} else if (curr_datatype_metric == "deaths") {
-					legend_stops = [
-						[0, 'darkgray'],
-						[50, 'green'],
-						[100, 'yellow'],
-						[500, 'darkorange'],
-						[1000, 'red']
-					];
+					var stops = [0, 50, 100, 500, 1000]
 				}
 			}
 		}
+
+		legend_stops = [
+			[stops[0], 'darkgray'],
+			[stops[1], 'green'],
+			[stops[2], 'yellow'],
+			[stops[3], 'darkorange'],
+			[stops[4], 'red']
+		];
 
 		return legend_stops;
 	};

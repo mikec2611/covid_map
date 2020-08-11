@@ -1,8 +1,8 @@
 <html>
 	<head>
-		<title>U.S. Covid-19 County Map</title>
+		<title>U.S. Covid-19 Map</title>
 		<meta charset="utf-8">
-		<meta name="description" content="Interactive map vizualizing Covid-19 data by county in the United States.">
+		<meta name="description" content="Interactive map vizualizing Covid-19 data in the United States.">
 
 		<!-- Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-40220685-1"></script>
@@ -29,6 +29,7 @@
 		<script type="text/javascript">
 			var unique_county = {{ unique_county|tojson }}
 			var geodata_county = {{ geodata_county|tojson }}
+			var geodata_county_pop = {{ geodata_county_pop|tojson }}
 			var geodata_state = {{ geodata_state|tojson }}
 			var geodata_state_pop = {{ geodata_state_pop|tojson }}
 			var date_list = {{ date_list|tojson }}
