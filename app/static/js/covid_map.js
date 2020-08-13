@@ -567,36 +567,28 @@ $(document).ready(function($) {
 				if (curr_datatype_metric == "cases"){
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 10, 100, 1000, 10000]
-						var step = "a"
 					} else if (curr_data_pop_level == "population"){
-						var stops = [0, 100, 500, 1000, 2000]
-						var step = "b"
+						var stops = [0, 250, 1000, 2500, 5000]
 					}
 				} else if (curr_datatype_metric == "deaths") {
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 1, 10, 100, 1000]
-						var step = "c"
 					} else if (curr_data_pop_level == "population"){
 						var stops = [0, 50, 100, 500, 1000]
-						var step = "d"
 					}
 				}
 			} else if (curr_datatype_type == "daily"){
 				if (curr_datatype_metric == "cases"){
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 1, 10, 100, 1000]
-						var step = "e"
 					} else if (curr_data_pop_level == "population"){
 						var stops = [0, 10, 25, 50, 100]
-						var step = "f"
 					}
 				} else if (curr_datatype_metric == "deaths") {
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 1, 5, 10, 100]
-						var step = "g"
 					} else if (curr_data_pop_level == "population"){
-						var stops = [0, 5, 10, 25, 50]
-						var step = "h"
+						var stops = [0, 1, 5, 10, 25]
 					}
 				}
 			}
@@ -605,42 +597,33 @@ $(document).ready(function($) {
 				if (curr_datatype_metric == "cases"){
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 5000, 10000, 50000, 100000]
-						var step = "i"
 					} else if (curr_data_pop_level == "population"){
 						var stops = [0, 500, 1000, 2000, 2500]
-						var step = "j"
 					}
 				} else if (curr_datatype_metric == "deaths") {
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 500, 1000, 5000, 10000]
-						var step = "k"
 					} else if (curr_data_pop_level == "population"){
 						var stops = [0, 10, 25, 50, 100]
-						var step = "l"
 					}
 				}
 			} else if (curr_datatype_type == "daily"){ 
 				if (curr_datatype_metric == "cases"){
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 500, 1000, 5000, 10000]
-						var step = "m"
 					} else if (curr_data_pop_level == "population"){
-						var stops = [0, 55, 10, 25, 50]
-						var step = "n"
+						var stops = [0, 5, 10, 25, 50]
 					}
 				} else if (curr_datatype_metric == "deaths") {
 					if (curr_data_pop_level == "base"){
 						var stops = [0, 50, 100, 500, 1000]
-						var step = "o"
 					} else if (curr_data_pop_level == "population"){
 						var stops = [0, .25, 0.5, 0.75, 1]
-						var step = "p"
 					}
 				}
 			}
 		}
 
-		console.log(step)
 		legend_stops = [
 			[stops[0], 'darkgray'],
 			[stops[1], 'green'],
