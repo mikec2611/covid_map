@@ -259,15 +259,15 @@ def run_process(get_data_flag):
 		#--------county data processing
 
 		# calculate deciles for map coloring
-		data_county_total = pd.DataFrame()
-		for date_val in date_list:
-			data_county_slice = data_county.loc[data_county["date_id"] == date_val]
-			data_county_slice['cases_decile'] = pd.qcut(data_county_slice['cases'], 10, labels=False, duplicates='drop')
-			data_county_slice['cases_decile'] = data_county_slice['cases_decile'] + 1
-			data_county_slice['deaths_decile'] = pd.qcut(data_county_slice['deaths'], 10, labels=False, duplicates='drop')
-			data_county_slice['deaths_decile'] = data_county_slice['deaths_decile'] + 1
-			data_county_total = data_county_total.append(data_county_slice)
-		data_county = data_county_total
+		# data_county_total = pd.DataFrame()
+		# for date_val in date_list:
+		# 	data_county_slice = data_county.loc[data_county["date_id"] == date_val]
+		# 	data_county_slice['cases_decile'] = pd.qcut(data_county_slice['cases'], 10, labels=False, duplicates='drop')
+		# 	data_county_slice['cases_decile'] = data_county_slice['cases_decile'] + 1
+		# 	data_county_slice['deaths_decile'] = pd.qcut(data_county_slice['deaths'], 10, labels=False, duplicates='drop')
+		# 	data_county_slice['deaths_decile'] = data_county_slice['deaths_decile'] + 1
+		# 	data_county_total = data_county_total.append(data_county_slice)
+		# data_county = data_county_total
 
 		# add properties to each county geojson with covid data
 		debug_msg("populate county data - base")
@@ -318,11 +318,11 @@ def run_process(get_data_flag):
 							if date_deaths > 0:
 								prior_deaths = date_deaths
 
-							# deciles
-							date_cases_decile = date_data["cases_decile"].values[0].astype("float")
-							date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
-							feature["properties"]["cases_decile_" + date_val] = date_cases_decile
-							feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+							# # deciles
+							# date_cases_decile = date_data["cases_decile"].values[0].astype("float")
+							# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
+							# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
+							# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
 
 				del feature["properties"]["ALAND"]
 				del feature["properties"]["AWATER"]
@@ -380,8 +380,7 @@ def run_process(get_data_flag):
 							pop_data = pop_data_st.loc[pop_data_st["CTYNAME"] == county_name]
 							if not pop_data.empty:
 								date_cases = round((date_data["cases"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
-								date_cases = round((date_data["cases"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
-								date_deaths = date_data["deaths"].values[0].astype("float")
+								date_deaths = round((date_data["deaths"].values[0].astype("float") * pop_denom) / pop_data["POPESTIMATE2019"].values[0].astype("float"),2)
 								date_casesPD = date_cases - prior_cases
 								date_deathsPD = date_deaths - prior_deaths
 								if date_casesPD < 0:
@@ -400,11 +399,11 @@ def run_process(get_data_flag):
 								if date_deaths > 0:
 									prior_deaths = date_deaths
 
-								# deciles
-								date_cases_decile = date_data["cases_decile"].values[0].astype("float")
-								date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
-								feature["properties"]["cases_decile_" + date_val] = date_cases_decile
-								feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+								# # deciles
+								# date_cases_decile = date_data["cases_decile"].values[0].astype("float")
+								# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
+								# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
+								# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
 
 				del feature["properties"]["ALAND"]
 				del feature["properties"]["AWATER"]

@@ -96,11 +96,12 @@
 			<thead>
 				<tr>
 					<th colspan="2" id="data_level_title" class="dataopt_title">
-						Data Level
+						Options
 					</th>
 				</tr>
 			</thead>
 			<tbody>
+				<!-- state/county -->
 				<tr>
 					<td class="data_level_box" id="data_level_2">
 						<input id="data_level_state" class="rb_data_level" type="radio" name="data_level_toggle" value="state" checked="checked">State</input>
@@ -109,12 +110,33 @@
 						<input id="data_level_county" class="rb_data_level" type="radio" name="data_level_toggle" value="county">County</input>
 					</td>
 				</tr>
+
+				<!-- per100k/base -->
 				<tr>
 					<td class="data_level_box" id="data_level_pop_1">
-						<input id="data_level_pop" class="rb_data_pop_level" type="radio" name="data_level_pop_toggle" value="population" checked="checked">Per 100k</input>
+						<input id="data_level_pop" class="rb_data_pop_level" type="radio" name="data_level_pop_toggle" value="population" checked="checked">Per 100k Persons</input>
 					</td>
 					<td class="data_level_box" id="data_level_pop_2">
 						<input id="data_level_base" class="rb_data_pop_level" type="radio" name="data_level_pop_toggle" value="base">Base</input>
+					</td>
+				</tr>
+
+				<!-- current/daily -->
+				<tr>
+					<td class="rb_dataopt_box">
+						<input id="dataopt_current" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="current" checked="checked">Current Count</input>
+					</td>
+					<td class="rb_dataopt_box">
+						<input id="dataopt_daily" class="rb_dataopt_type rb_dataopt" type="radio" name="dataopt_type" value="daily" >Daily Count</input>
+					</td>
+				</tr>
+				<!-- cases/deaths -->
+				<tr>
+					<td class="data_level_box">
+						<input id="dataopt_cases" class="rb_dataopt_metric rb_dataopt" type="radio" name="dataopt_metric" value="cases" checked="checked">Reported Cases</input>
+					</td>
+					<td class="data_level_box">
+						<input id="dataopt_deaths" class="rb_dataopt_metric rb_dataopt" type="radio" name="dataopt_metric" value="deaths">Reported Deaths</input>
 					</td>
 				</tr>
 			</tbody>
@@ -162,9 +184,9 @@
 
 
 		<!-- data type control box -->
-		<table id="data_options_box" class="control_box">
+<!-- 		<table id="data_options_box" class="control_box">
 
-			<!-- metric -->
+			
 
 			<tbody>
 				<tr>
@@ -180,13 +202,7 @@
 						<input id="dataopt_deaths" class="rb_dataopt_metric rb_dataopt" type="radio" name="dataopt_metric" value="deaths">Reported Deaths</input>
 					</td>
 				</tr>
-<!-- 				<tr>
-					<td class="rb_dataopt_box" title="Cases per Capita">
-						<input id="dataopt_casePC" class="rb_dataopt" type="radio" name="dataopt_type" value="casePC">Cases Per Capita</input>
-					</td>
-				</tr> -->
 
-				<!-- data type -->
 				<tr><td colspan="2" class="dataopt_spacer"></td></tr>
 				<tr><td colspan="2" class="dataopt_title" id="dataopt_title_2">Data Type</td></tr>
 				<tr>
@@ -200,7 +216,7 @@
 					</td>
 				</tr>
 			</tbody>
-		</table>
+		</table> -->
 
 		<!-- legend -->
 		<table id="legend_box" class="control_box">

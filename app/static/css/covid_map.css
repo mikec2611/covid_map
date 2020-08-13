@@ -10,7 +10,7 @@
 			width:33% !important;
 		}
 
-		#data_options_box{
+		#data_options_box, #data_level_toggle{
 	      top:51.5% !important;
 	      min-width:174px !important;
 		}
@@ -58,10 +58,10 @@
 		.dataopt_title{
 		              font-size:16px !important;
 		}
-		.rb_dataopt_box{
+/*		.rb_dataopt_box{
 		              font-size:13px !important;
 		}
-		 
+		 */
 		#slider_title{
 		              font-size:15px !important;
 		}
@@ -214,7 +214,7 @@ body{
 }
 
 /*data options box*/
-#data_options_box{
+#data_options_box, #data_level_toggle{
 	position:absolute;
 	z-index:1100;
 	min-width: 225px;
@@ -236,17 +236,14 @@ body{
 .dataopt_spacer{
 	height:5px;
 }
-.rb_dataopt_box{
+/*.rb_dataopt_box{
 	font-size: 20px;
     padding-left: 5%;
-}
+}*/
 .rb_dataopt{
-	width:15px;
-	height:15px;
-	margin-right: 5%;
 	cursor:pointer;
 	position:relative;
-	top:3px;
+	margin-right: 7.5px;
 }
 
 /* county info box*/
@@ -535,7 +532,7 @@ a:visited{
 	color:orange;
 }
 
-#data_level_toggle{
+/*#data_level_toggle{
 	display: table;
     top: 5.5%;
     left: 45%;
@@ -545,7 +542,7 @@ a:visited{
     z-index: 1110;
     color: white;
     display:none;
-}
+}*/
 input.rb_data_level, input.rb_data_pop_level{
 	cursor:pointer;
 	margin-right:7.5px;

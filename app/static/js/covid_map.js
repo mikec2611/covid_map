@@ -123,7 +123,7 @@ $(document).ready(function($) {
 
 		// add county layer
 		map.addLayer({
-			'id': 'us_counties',
+			'id': 'us_counties_fill',
 			'type': 'fill',
 			'source': 'us_counties',
 			// 'layout': {},
@@ -213,7 +213,7 @@ $(document).ready(function($) {
 		});
 
 		// events when click on county layers
-		map.on('click', 'us_counties', function(e) {
+		map.on('click', 'us_counties_fill', function(e) {
 			event_shp = e.features[0]
 			if ($selected_county.id != event_shp.id){
 				// if ($selected_county != ""){
@@ -269,7 +269,7 @@ $(document).ready(function($) {
 		});
 
 		// events when mouse moves on county layers
-		map.on('mousemove', 'us_counties', function(e) {
+		map.on('mousemove', 'us_counties_fill', function(e) {
 			event_shp = e.features[0]
 			if ($active_county.id != event_shp.id){
 				if ($active_county != ""){
@@ -297,7 +297,7 @@ $(document).ready(function($) {
 		});
 
 		// events when mouse leaves county layers
-		map.on('mouseleave', 'us_counties', function(e) {
+		map.on('mouseleave', 'us_counties_fill', function(e) {
 			if ($active_county != ""){
 				toggle_highlight_shp($active_county.id, false)
 			};
@@ -424,10 +424,11 @@ $(document).ready(function($) {
 		// color radiobutton choices
 		if ($(this).hasClass("rb_dataopt_metric")){
 			$("input.rb_dataopt_metric").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+			$(this).parent().css({'color': 'greenyellow', 'font-weight': 'bold'});
 		} else if ($(this).hasClass("rb_dataopt_type")){
 			$("input.rb_dataopt_type").parent().css({'color': 'inherit', 'font-weight': 'inherit'})
+			$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 		};
-		$(this).parent().css({'color': 'orange', 'font-weight': 'bold'});
 	});
 
 	// update the county chart
@@ -509,34 +510,44 @@ $(document).ready(function($) {
 		// 		];
 
 		if (curr_data_level == "county"){
-			map.setPaintProperty('us_counties', 'fill-color', {
-				property: curr_lookup,
-				stops: legend_stops
-			});
-
-			map.setLayoutProperty('us_states_fill', 'visibility', 'none');
-			map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
 			if (curr_data_pop_level == "base"){
-				map.setLayoutProperty('us_counties', 'visibility', 'visible');
+				map.setPaintProperty('us_counties_fill', 'fill-color', {
+					property: curr_lookup,
+					stops: legend_stops
+				});
+				map.setLayoutProperty('us_counties_fill', 'visibility', 'visible');
 				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'none');
-			} else if (curr_data_pop_level == "population"){
-				map.setLayoutProperty('us_counties', 'visibility', 'none');
-				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'visible');
-			}
-		} else if (curr_data_level == "state"){
-			map.setPaintProperty('us_states_fill', 'fill-color', {
-				property: curr_lookup,
-				stops: legend_stops
-			});
-
-			map.setLayoutProperty('us_counties', 'visibility', 'none');
-			map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'none');
-			if (curr_data_pop_level == "base"){
-				map.setLayoutProperty('us_states_fill', 'visibility', 'visible');
+				map.setLayoutProperty('us_states_fill', 'visibility', 'none');
 				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
 			} else if (curr_data_pop_level == "population"){
+				map.setPaintProperty('us_counties_pop_fill', 'fill-color', {
+					property: curr_lookup,
+					stops: legend_stops
+				});
+				map.setLayoutProperty('us_counties_fill', 'visibility', 'none');
+				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'visible');
+				map.setLayoutProperty('us_states_fill', 'visibility', 'none');
+				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
+			}
+		} else if (curr_data_level == "state"){
+			if (curr_data_pop_level == "base"){
+				map.setPaintProperty('us_states_fill', 'fill-color', {
+					property: curr_lookup,
+					stops: legend_stops
+				});
+				map.setLayoutProperty('us_states_fill', 'visibility', 'visible');
+				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'none');
+				map.setLayoutProperty('us_counties_fill', 'visibility', 'none');
+				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'none');
+			} else if (curr_data_pop_level == "population"){
+				map.setPaintProperty('us_states_pop_fill', 'fill-color', {
+					property: curr_lookup,
+					stops: legend_stops
+				});
 				map.setLayoutProperty('us_states_fill', 'visibility', 'none');
 				map.setLayoutProperty('us_states_pop_fill', 'visibility', 'visible');
+				map.setLayoutProperty('us_counties_fill', 'visibility', 'none');
+				map.setLayoutProperty('us_counties_pop_fill', 'visibility', 'none');
 			}
 		};
 
@@ -554,33 +565,82 @@ $(document).ready(function($) {
 		if (curr_data_level == "county"){
 			if (curr_datatype_type == "current"){
 				if (curr_datatype_metric == "cases"){
-					var stops = [0, 10, 100, 1000, 10000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 10, 100, 1000, 10000]
+						var step = "a"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 100, 500, 1000, 2000]
+						var step = "b"
+					}
 				} else if (curr_datatype_metric == "deaths") {
-					var stops = [0, 1, 10, 100, 1000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 1, 10, 100, 1000]
+						var step = "c"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 50, 100, 500, 1000]
+						var step = "d"
+					}
 				}
 			} else if (curr_datatype_type == "daily"){
 				if (curr_datatype_metric == "cases"){
-					var stops = [0, 1, 10, 100, 1000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 1, 10, 100, 1000]
+						var step = "e"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 10, 25, 50, 100]
+						var step = "f"
+					}
 				} else if (curr_datatype_metric == "deaths") {
-					var stops = [0, 1, 5, 10, 100]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 1, 5, 10, 100]
+						var step = "g"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 5, 10, 25, 50]
+						var step = "h"
+					}
 				}
 			}
 		} else if (curr_data_level == "state"){
 			if (curr_datatype_type == "current"){
 				if (curr_datatype_metric == "cases"){
-					var stops = [0, 5000, 10000, 50000, 100000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 5000, 10000, 50000, 100000]
+						var step = "i"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 500, 1000, 2000, 2500]
+						var step = "j"
+					}
 				} else if (curr_datatype_metric == "deaths") {
-					var stops = [0, 500, 1000, 5000, 10000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 500, 1000, 5000, 10000]
+						var step = "k"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 10, 25, 50, 100]
+						var step = "l"
+					}
 				}
-			} else if (curr_datatype_type == "daily"){
+			} else if (curr_datatype_type == "daily"){ 
 				if (curr_datatype_metric == "cases"){
-					var stops = [0, 500, 1000, 5000, 10000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 500, 1000, 5000, 10000]
+						var step = "m"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, 55, 10, 25, 50]
+						var step = "n"
+					}
 				} else if (curr_datatype_metric == "deaths") {
-					var stops = [0, 50, 100, 500, 1000]
+					if (curr_data_pop_level == "base"){
+						var stops = [0, 50, 100, 500, 1000]
+						var step = "o"
+					} else if (curr_data_pop_level == "population"){
+						var stops = [0, .25, 0.5, 0.75, 1]
+						var step = "p"
+					}
 				}
 			}
 		}
 
+		console.log(step)
 		legend_stops = [
 			[stops[0], 'darkgray'],
 			[stops[1], 'green'],
@@ -1236,7 +1296,7 @@ $(document).ready(function($) {
 
 	// highlight shape
 	function toggle_highlight_shp(county_index, bool_active){
-		map.setFeatureState({source: 'us_counties', id: county_index}, { hover: bool_active });
+		map.setFeatureState({source: 'us_counties_fill', id: county_index}, { hover: bool_active });
 	};
 	function toggle_highlight_shp_st(state_index, bool_active){
 		map.setFeatureState({source: 'us_states', id: state_index}, { hover: bool_active });
