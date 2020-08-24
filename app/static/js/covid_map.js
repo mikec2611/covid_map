@@ -11,6 +11,7 @@ var $selected_state_prop = "";
 var county_chart;
 var total_chart;
 var unique_county_list;
+var timeout;
 
 var chartcolor_1 = "orange"
 var chartcolor_2 = "forestgreen"
@@ -42,8 +43,20 @@ $(document).ready(function($) {
 	var $county_info_box = $('#county_info_box')
 	var $county_info_body = $('#county_info_body')
 
-	$('#loading_bar').progressbar({value: 15})
-	$('#load_progress').text("15%")
+	$('#loading_bar').progressbar({value: 0})
+	$('#load_progress').text("0%")
+
+	var i = 0;
+	function load_progress(){
+			i=i+5
+			setTimeout(function() {
+				$('#loading_bar').progressbar({value: i})
+				$('#load_progress').text(i + "%")
+				if (i < 95){
+					load_progress()
+				}
+			}, i*10);
+	};
 
 	$.ajax({
 			type : "POST",
@@ -51,19 +64,19 @@ $(document).ready(function($) {
 			dataType: "json",
 			contentType: 'application/json;charset=UTF-8',
 			xhr: function() {
+				load_progress()
 		        var xhr = new window.XMLHttpRequest();
 
-		       // download progress
-		       xhr.addEventListener("progress", function(evt){
-		           if (evt.lengthComputable) {
-		              	var load_perc = Math.round(evt.loaded / evt.total * 100 + 15);
-		              	if (load_perc > 100){
-		              		load_perc = 100;
-		              	}
-		                $( "#loading_bar" ).progressbar("option", "value", load_perc)
-		                $('#load_progress').text(load_perc + "%")
-		           }
-		       }, false);
+				// download progress
+				xhr.addEventListener("progress", function(evt){
+					if (evt.lengthComputable) {
+						var load_perc = Math.round(evt.loaded / evt.total * 100);
+						if (load_perc == 100){
+							$('#loading_bar').progressbar("option", "value", 100);
+							$('#load_progress').text("100%");
+						};
+					};
+				});
 
 		       return xhr;
 		    },
@@ -410,8 +423,7 @@ $(document).ready(function($) {
 				});
 
 				// create date slider
-				var zoom_threshold = 6.5
-				var timeout
+				var zoom_threshold = 6.5;
 			    $date_slider.slider({
 			        range: false,
 			        min: first_date_sld / 1000,
