@@ -258,6 +258,19 @@ body{
 	text-align: right;    
     padding-right: 30px;
 }
+#history_btn_container{
+	cursor:pointer;
+	position:absolute;
+	right:5%;
+	top:5%;
+}
+#history_btn{
+	font-size:35px;
+	color:orange;
+}
+#history_btn:hover{
+	font-size:37px;
+}
 
 /*data options box*/
 #data_options_box, #data_level_toggle{

@@ -53,7 +53,7 @@
 		<!-- top bar-->
 		<div id="top_bar">
 			<div id="btn_info" class="top_bar_section"><i class="fas fa-info-circle"></i></div>
-			<div id="page_title" class="top_bar_section">uscovidmap.io</div>
+			<div id="page_title" class="top_bar_section"></div>
 			<div id="data_update" class="top_bar_section">Data Range: <span id="data_update_val"></span></div>
 			<div id="top_bar_spacer" class="top_bar_section"></div>
 		</div>
@@ -248,7 +248,11 @@
 		<table id="slider_container" class="control_box">
 			<tbody>
 				<tr>
-					<td id='slider_title' colspan="3">Date</td>
+					<td id='slider_title' colspan="3">Date
+						<div id="history_btn_container" title="Watch history of selected data.">
+							<i id="history_btn" class="far fa-play-circle"></i>
+						</div>
+					</td>
 				</tr>
 				<tr>
 					<td id='slider_min_box' class="slider_val_box"></td>

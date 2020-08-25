@@ -25,13 +25,6 @@ $(window).on('resize', function(){
 })
 
 $(document).ready(function($) {
-	// console.log(unique_county)
-	// console.log(date_list)
-	// console.log(geodata_county)
-	//console.log(geodata_county_pop)
-	// console.log(geodata_state)
-	// console.log(geodata_state_pop)
-	// console.log(data_total)
 
 	//cache commonly used elements
 	var $date_slider = $("#date_slider")
@@ -46,16 +39,16 @@ $(document).ready(function($) {
 	$('#loading_bar').progressbar({value: 0})
 	$('#load_progress').text("0%")
 
-	var i = 0;
+	var load_idx = 0;
 	function load_progress(){
-			i=i+5
+			load_idx= load_idx + 5
 			setTimeout(function() {
-				$('#loading_bar').progressbar({value: i})
-				$('#load_progress').text(i + "%")
-				if (i < 95){
-					load_progress()
-				}
-			}, i*10);
+				$('#loading_bar').progressbar({value: load_idx})
+				$('#load_progress').text(load_idx + "%")
+				if (load_idx < 95){
+					load_progress();
+				};
+			}, load_idx * 10);
 	};
 
 	$.ajax({
@@ -435,7 +428,10 @@ $(document).ready(function($) {
 					    timeout = setTimeout(function() {
 					        update_map(ui.value)
 					    }, 100);
-			        }
+			        }//,
+			        // change: function(event, ui){
+			        // 	update_map(ui.value)
+			        // }
 			    });
 
 			    // select new data metric/type for total mapping
@@ -533,6 +529,11 @@ $(document).ready(function($) {
 					$selected_state_prop = ""
 					$selected_county = ""
 					$selected_county_prop = ""
+				});
+
+				// play history
+				$('#history_btn_container, #history_btn').on('click', function(){
+					play_history(true);
 				});
 
 				// ---functions
@@ -856,6 +857,7 @@ $(document).ready(function($) {
 						var chart_container = $("#total_chart_container")
 						var chart_metric = $("input.rb_dataoptall_metric_chart:checked").val();
 						var chart_type = $("input.rb_dataoptall_type_chart:checked").val();
+						var chart_pop_level = "base";
 
 						// destroy existing chart if it exists
 						if (typeof(total_chart) != "undefined"){
@@ -902,7 +904,7 @@ $(document).ready(function($) {
 					} else if (chart_pop_level == "population"){
 						var chart_pop_label_1 = "Reported Cases (per 100k)"
 						var chart_pop_label_2 = "Reported Deaths (per 100k)"
-					}
+					};
 				
 					if (chart_type == "current"){
 						var chardata_type = "line";
@@ -1343,11 +1345,41 @@ $(document).ready(function($) {
 					map.setFeatureState({source: 'us_states_pop', id: state_index}, { hover: bool_active });
 				};
 
+				// format a date from int state
 				function format_date(raw_date){
 					updated_date = new Date((new Date(raw_date) / 1000) * 1000)
 					updated_date = updated_date.toISOString().split('T')[0].split("-")
 					updated_date = updated_date[1] + "-" + updated_date[2] + "-" + updated_date[0]
 					return updated_date
+				};
+
+				// play history for selected data
+				var last_idx = date_list.length
+				var hist_idx = 0;
+				function play_history(){
+					if (hist_idx == 0){
+						$date_slider.slider("disable");
+						var next_date = date_list[hist_idx];
+						next_date = new Date(next_date.substring(0,4), next_date.substring(4,6) -1, next_date.substring(6,8));
+						$date_slider.slider("option","value", next_date / 1000);
+						update_map(next_date / 1000);
+					};
+
+					hist_idx++
+					if (hist_idx < last_idx){
+						setTimeout(function() {
+							var next_date = date_list[hist_idx];
+							next_date = new Date(next_date.substring(0,4), next_date.substring(4,6) -1, next_date.substring(6,8));
+							$date_slider.slider("option","value", next_date / 1000);
+							update_map(next_date / 1000);
+							play_history();
+						}, hist_idx * 100 - ((hist_idx - 1) * 100) );
+					} else {
+						setTimeout(function() {
+							hist_idx = 0;
+							$date_slider.slider("enable");
+						}, 1000 );
+					};
 				};
 			}
 		});
