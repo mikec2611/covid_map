@@ -410,7 +410,7 @@ $(document).ready(function($) {
 					$('#loading_screen').hide();
 					$('#data_update, #btn_info').show()
 					$('#dataoptall_cases, #dataoptall_current, #dataoptall_daily_chart, #dataoptall_cases_chart, #data_level_state, #data_level_pop').trigger('change');
-					$('#dataopt_cases, #dataopt_current, #dataopt_daily_chart, #dataopt_cases_chart').trigger('change');
+					$('#dataopt_cases, #dataopt_daily, #dataopt_daily_chart, #dataopt_cases_chart').trigger('change');
 					update_map(last_date_sld / 1000);
 					$('.control_box').not('#county_info_box, #tooltip_box, #app_info_box').show()
 				});
