@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 from geojson import dump, FeatureCollection
+from dateutil.relativedelta import relativedelta
 import time
 
 app_rel_path = "C:/programming/covid_map"
@@ -12,6 +13,10 @@ app_rel_path = "C:/programming/covid_map"
 
 def get_data_covid():
 	debug_msg("run get_data_covid")
+	date_today = datetime.datetime.today()
+	date_start = date_today + relativedelta(months=-6)
+	date_start = (date_start.strftime('%Y%m%d')).astype(int)
+
 	# county
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
 						    dtype={'fips': 'str'}
@@ -21,7 +26,7 @@ def get_data_covid():
 	df_county.columns = ["date","county","state","fips","cases","deaths"]
 	df_county["date_id"] = df_county["date"].str.replace('-','')
 
-	df_county = df_county.loc[df_county["date_id"].astype(int) >= 20200315]
+	df_county = df_county.loc[df_county["date_id"].astype(int) >= date_start]
 	df_county = df_county.loc[df_county["fips"].notnull()]
 
 	# NYC = 10001
@@ -32,12 +37,12 @@ def get_data_covid():
 						    dtype={'fips': 'str'}
 						  )
 	df_state["date_id"] = df_state["date"].str.replace('-','')
-	df_state = df_state.loc[df_state["date_id"].astype(int) >= 20200315]
+	df_state = df_state.loc[df_state["date_id"].astype(int) >= date_start]
 
 	# total
 	df_total = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us.csv')
 	df_total["date_id"] = df_total["date"].str.replace('-','')
-	df_total = df_total.loc[df_total["date_id"].astype(int) >= 20200315]
+	df_total = df_total.loc[df_total["date_id"].astype(int) >= date_start]
 	
 	return df_total, df_state, df_county
 

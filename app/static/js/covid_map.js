@@ -619,9 +619,9 @@ $(document).ready(function($) {
 						if (curr_datatype_type == "current"){
 							if (curr_datatype_metric == "cases"){
 								if (curr_data_pop_level == "base"){
-									var stops = [0, 10, 100, 1000, 10000]
+									var stops = [0, 100, 1000, 5000, 10000]
 								} else if (curr_data_pop_level == "population"){
-									var stops = [0, 250, 1000, 2500, 5000]
+									var stops = [0, 1000, 2500, 5000, 10000]
 								}
 							} else if (curr_datatype_metric == "deaths") {
 								if (curr_data_pop_level == "base"){
@@ -649,15 +649,15 @@ $(document).ready(function($) {
 						if (curr_datatype_type == "current"){
 							if (curr_datatype_metric == "cases"){
 								if (curr_data_pop_level == "base"){
-									var stops = [0, 5000, 10000, 50000, 100000]
+									var stops = [0, 50000, 100000, 500000, 1000000]
 								} else if (curr_data_pop_level == "population"){
-									var stops = [0, 500, 1000, 2000, 2500]
+									var stops = [0, 1000, 2500, 5000, 7500]
 								}
 							} else if (curr_datatype_metric == "deaths") {
 								if (curr_data_pop_level == "base"){
 									var stops = [0, 500, 1000, 5000, 10000]
 								} else if (curr_data_pop_level == "population"){
-									var stops = [0, 10, 25, 50, 100]
+									var stops = [0, 25, 50, 100, 150]
 								}
 							}
 						} else if (curr_datatype_type == "daily"){ 
