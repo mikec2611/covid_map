@@ -15,7 +15,7 @@ def get_data_covid():
 	debug_msg("run get_data_covid")
 	date_today = datetime.datetime.today()
 	date_start = date_today + relativedelta(months=-6)
-	date_start = (date_start.strftime('%Y%m%d')).astype(int)
+	date_start = int(date_start.strftime('%Y%m%d'))
 
 	# county
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
