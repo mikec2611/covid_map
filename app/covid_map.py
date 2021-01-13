@@ -16,6 +16,7 @@ def get_data_covid():
 	date_today = datetime.datetime.today()
 	date_start = date_today + relativedelta(months=-6)
 	date_start = int(date_start.strftime('%Y%m%d'))
+	print(date_start)
 
 	# county
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
@@ -111,8 +112,9 @@ def run_process(get_data_flag):
 
 		#calc total metrics
 		geodata_total= {}
+		offset_index = data_total.index[0]
 		for total_index, total_record in data_total.iterrows():
-			total_index = total_index - 54
+			total_index = total_index - offset_index
 
 			total_date = total_record[0]
 			total_cases = total_record[1]
