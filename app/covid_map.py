@@ -14,9 +14,8 @@ app_rel_path = "C:/programming/covid_map"
 def get_data_covid():
 	debug_msg("run get_data_covid")
 	date_today = datetime.datetime.today()
-	date_start = date_today + relativedelta(months=-6)
+	date_start = date_today + relativedelta(months=-6, days=-1)
 	date_start = int(date_start.strftime('%Y%m%d'))
-	print(date_start)
 
 	# county
 	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
@@ -158,6 +157,7 @@ def run_process(get_data_flag):
 				if not st_covid_data.empty:
 					prior_cases = 0
 					prior_deaths = 0
+					date_ctr = 0
 					for date_val in date_list:
 						date_data = st_covid_data.loc[st_covid_data["date_id"] == date_val]
 						if not date_data.empty:
@@ -170,11 +170,12 @@ def run_process(get_data_flag):
 							if date_deathsPD < 0:
 								date_deathsPD = 0
 
-							feature["properties"]["cases_" + date_val] = date_cases
-							feature["properties"]["deaths_" + date_val] = date_deaths
+							if date_ctr > 0:
+								feature["properties"]["cases_" + date_val] = date_cases
+								feature["properties"]["deaths_" + date_val] = date_deaths
 
-							feature["properties"]["casesPD_" + date_val] = date_casesPD
-							feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+								feature["properties"]["casesPD_" + date_val] = date_casesPD
+								feature["properties"]["deathsPD_" + date_val] = date_deathsPD
 
 							if date_cases > 0:
 								prior_cases = date_cases
@@ -186,6 +187,7 @@ def run_process(get_data_flag):
 							# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
 							# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
 							# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+						date_ctr = date_ctr + 1
 
 				del feature["properties"]["ALAND"]
 				del feature["properties"]["AWATER"]
@@ -216,6 +218,7 @@ def run_process(get_data_flag):
 				if not st_covid_data.empty:
 					prior_cases = 0
 					prior_deaths = 0
+					date_ctr = 0
 					for date_val in date_list:
 						date_data = st_covid_data.loc[st_covid_data["date_id"] == date_val]
 						if not date_data.empty:
@@ -230,11 +233,12 @@ def run_process(get_data_flag):
 								if date_deathsPD < 0:
 									date_deathsPD = 0
 
-								feature["properties"]["cases_" + date_val] = date_cases
-								feature["properties"]["deaths_" + date_val] = date_deaths
+								if date_ctr > 0:
+									feature["properties"]["cases_" + date_val] = date_cases
+									feature["properties"]["deaths_" + date_val] = date_deaths
 
-								feature["properties"]["casesPD_" + date_val] = date_casesPD
-								feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+									feature["properties"]["casesPD_" + date_val] = date_casesPD
+									feature["properties"]["deathsPD_" + date_val] = date_deathsPD
 
 								if date_cases > 0:
 									prior_cases = date_cases
@@ -246,6 +250,7 @@ def run_process(get_data_flag):
 								# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
 								# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
 								# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+						date_ctr = date_ctr + 1
 
 				del feature["properties"]["ALAND"]
 				del feature["properties"]["AWATER"]
@@ -302,6 +307,7 @@ def run_process(get_data_flag):
 				if not fips_data.empty:
 					prior_cases = 0
 					prior_deaths = 0
+					date_ctr = 0
 					for date_val in date_list:
 						date_data = fips_data.loc[fips_data["date_id"] == date_val]
 						if not date_data.empty:
@@ -314,11 +320,12 @@ def run_process(get_data_flag):
 							if date_deathsPD < 0:
 								date_deathsPD = 0
 
-							feature["properties"]["cases_" + date_val] = date_cases
-							feature["properties"]["deaths_" + date_val] = date_deaths
+							if date_ctr > 0:
+								feature["properties"]["cases_" + date_val] = date_cases
+								feature["properties"]["deaths_" + date_val] = date_deaths
 
-							feature["properties"]["casesPD_" + date_val] = date_casesPD
-							feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+								feature["properties"]["casesPD_" + date_val] = date_casesPD
+								feature["properties"]["deathsPD_" + date_val] = date_deathsPD
 
 							if date_cases > 0:
 								prior_cases = date_cases
@@ -330,6 +337,7 @@ def run_process(get_data_flag):
 							# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
 							# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
 							# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+						date_ctr = date_ctr + 1
 
 				del feature["properties"]["ALAND"]
 				del feature["properties"]["AWATER"]
@@ -380,6 +388,7 @@ def run_process(get_data_flag):
 				if not fips_data.empty:
 					prior_cases = 0
 					prior_deaths = 0
+					date_ctr = 0
 					for date_val in date_list:
 						date_data = fips_data.loc[fips_data["date_id"] == date_val]
 						if not date_data.empty:
@@ -395,11 +404,12 @@ def run_process(get_data_flag):
 								if date_deathsPD < 0:
 									date_deathsPD = 0
 
-								feature["properties"]["cases_" + date_val] = date_cases
-								feature["properties"]["deaths_" + date_val] = date_deaths
+								if date_ctr > 0:
+									feature["properties"]["cases_" + date_val] = date_cases
+									feature["properties"]["deaths_" + date_val] = date_deaths
 
-								feature["properties"]["casesPD_" + date_val] = date_casesPD
-								feature["properties"]["deathsPD_" + date_val] = date_deathsPD
+									feature["properties"]["casesPD_" + date_val] = date_casesPD
+									feature["properties"]["deathsPD_" + date_val] = date_deathsPD
 
 								if date_cases > 0:
 									prior_cases = date_cases
@@ -411,6 +421,7 @@ def run_process(get_data_flag):
 								# date_deaths_decile = date_data["deaths_decile"].values[0].astype("float")
 								# feature["properties"]["cases_decile_" + date_val] = date_cases_decile
 								# feature["properties"]["deaths_decile_" + date_val] = date_deaths_decile
+						date_ctr = date_ctr + 1
 
 				del feature["properties"]["ALAND"]
 				del feature["properties"]["AWATER"]
