@@ -14,11 +14,12 @@ app_rel_path = "C:/programming/covid_map"
 def get_data_covid():
 	debug_msg("run get_data_covid")
 	date_today = datetime.datetime.today()
-	date_start = date_today + relativedelta(months=-6, days=-1)
-	date_start = int(date_start.strftime('%Y%m%d'))
+	# date_start = date_today + relativedelta(months=-6, days=-1)
+	# date_start = int(date_start.strftime('%Y%m%d'))
+	date_year = date_today.year
 
 	# county
-	df_county = pd.read_csv('https://raw.github.com/nytimes/covid-19-data/master/us-counties.csv',
+	df_county = pd.read_csv(f'https://raw.github.com/nytimes/covid-19-data/master/us-counties-{date_year}.csv',
 						    dtype={'fips': 'str'}
 							)
 	
@@ -26,7 +27,9 @@ def get_data_covid():
 	df_county.columns = ["date","county","state","fips","cases","deaths"]
 	df_county["date_id"] = df_county["date"].str.replace('-','')
 
-	df_county = df_county.loc[df_county["date_id"].astype(int) >= date_start]
+	# df_county = df_county.loc[df_county["date_id"].astype(int) >= date_start]
+	date_start = int(df_county['date_id'].min())
+
 	df_county = df_county.loc[df_county["fips"].notnull()]
 
 	# NYC = 10001
